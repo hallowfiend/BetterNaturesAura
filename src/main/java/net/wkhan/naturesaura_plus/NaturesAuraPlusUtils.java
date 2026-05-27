@@ -1,13 +1,15 @@
 package net.wkhan.naturesaura_plus;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.ChunkStatus;
+import net.minecraft.world.level.chunk.LevelChunkSection;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class NaturesAuraPlusUtils {
@@ -37,5 +39,67 @@ public class NaturesAuraPlusUtils {
             }
         }
         return visited;
+    }
+
+    public static List<BlockPos> scanSphereAgainstTag(Level level, BlockPos center, int radius, TagKey<Block> targetTag) {
+        List<BlockPos> foundTargets = new ArrayList<>();
+
+        long radiusSq = (long) radius * radius;
+
+        int minX = center.getX() - radius;
+        int maxX = center.getX() + radius;
+        int minZ = center.getZ() - radius;
+        int maxZ = center.getZ() + radius;
+
+        int minY = Math.max(level.getMinBuildHeight(), center.getY() - radius);
+        int maxY = Math.min(level.getMaxBuildHeight() - 1, center.getY() + radius);
+
+        int minChunkX = minX >> 4;
+        int maxChunkX = maxX >> 4;
+        int minChunkZ = minZ >> 4;
+        int maxChunkZ = maxZ >> 4;
+
+        for (int cX = minChunkX; cX <= maxChunkX; cX++) {
+            for (int cZ = minChunkZ; cZ <= maxChunkZ; cZ++) {
+
+                ChunkAccess chunk = level.getChunk(cX, cZ, ChunkStatus.FULL, false);
+                if (chunk == null) continue;
+
+                LevelChunkSection[] sections = chunk.getSections();
+
+                for (int i = 0; i < sections.length; i++) {
+                    LevelChunkSection section = sections[i];
+                    if (section == null || section.hasOnlyAir()) continue;
+
+                    int sectionBottomY = level.getMinBuildHeight() + (i * 16);
+                    int sectionTopY = sectionBottomY + 15;
+
+                    if (sectionTopY < minY || sectionBottomY > maxY) continue;
+
+                    for (int x = 0; x < 16; x++) {
+                        for (int y = 0; y < 16; y++) {
+                            for (int z = 0; z < 16; z++) {
+
+                                int worldY = sectionBottomY + y;
+                                if (worldY < minY || worldY > maxY) continue;
+
+                                int worldX = (cX << 4) + x;
+                                int worldZ = (cZ << 4) + z;
+
+                                long dx = worldX - center.getX();
+                                long dy = worldY - center.getY();
+                                long dz = worldZ - center.getZ();
+
+                                if (!(dx * dx + dy * dy + dz * dz <= radiusSq)) continue;
+                                BlockState state = section.getBlockState(x, y, z);
+                                if (state.is(targetTag)) foundTargets.add(new BlockPos(worldX, worldY, worldZ));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return foundTargets;
     }
 }
