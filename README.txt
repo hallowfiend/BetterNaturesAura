@@ -1,1 +1,1 @@
-A WIP Mod that aims to enhance some features of the Nature's Aura mod, and add some config options for aura generation.
+Hello! This mod has a lot of configs and custom json structure. I will update them and add them over here as a short guide
