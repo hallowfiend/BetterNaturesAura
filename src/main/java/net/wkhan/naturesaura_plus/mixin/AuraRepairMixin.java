@@ -1,6 +1,5 @@
 package net.wkhan.naturesaura_plus.mixin;
 
-
 import de.ellpeck.naturesaura.items.ItemAuraCache;
 import de.ellpeck.naturesaura.items.ItemImpl;
 import net.minecraft.core.NonNullList;

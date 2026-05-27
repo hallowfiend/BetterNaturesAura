@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.wkhan.naturesaura_plus.Config;
 import net.wkhan.naturesaura_plus.NaturesAuraPlusUtils;
 import net.wkhan.naturesaura_plus.common.tag.ModTags;
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,11 +50,11 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
         this.naturesaura_plus$treeCache = null;
     }
 
-    @Shadow private BlockPos ritualPos;
-    @Shadow private TreeRitualRecipe recipe;
-    @Shadow private int timer;
+    @Shadow(remap = false) private BlockPos ritualPos;
+    @Shadow(remap = false) private TreeRitualRecipe recipe;
+    @Shadow(remap = false) private int timer;
 
-    @Shadow private boolean isRitualOkay() {return false;}//I swear this is to make intelliJ shut up
+    @Shadow(remap = false) private boolean isRitualOkay() {return false;}//I swear this is to make intelliJ shut up
 
     @Inject(
             method = "isRitualOkay",
@@ -70,7 +71,7 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
 
         if (this.naturesaura_plus$treeCache == null) {
             this.naturesaura_plus$treeCache = NaturesAuraPlusUtils.crawlConnectedBlocks(
-                    level, this.ritualPos, 500,
+                    level, this.ritualPos, Config.maxRitualStems,
                     state -> state.is(ModTags.Blocks.TREE_RITUAL_STEMS)
             );
             if (this.naturesaura_plus$treeCache.isEmpty()) {
@@ -111,6 +112,7 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
         cir.setReturnValue(fine && required.isEmpty());
     }
 
+    //Most of this tick function other than the leaves clearing and some restructuring is straight from the base class of BlockEntityWoodStand, so credit is to Ellpeck.
     @Inject(
             method = "tick",
             at = @At("HEAD"),
@@ -149,7 +151,7 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
             });
         }
 
-        PacketHandler.sendToAllAround(this.level, this.ritualPos, 32, new PacketParticles((float)this.ritualPos.getX(), (float)this.ritualPos.getY(), (float)this.ritualPos.getZ(), PacketParticles.Type.TR_GOLD_POWDER, new int[0]));
+        PacketHandler.sendToAllAround(this.level, this.ritualPos, 32, new PacketParticles((float)this.ritualPos.getX(), (float)this.ritualPos.getY(), (float)this.ritualPos.getZ(), PacketParticles.Type.TR_GOLD_POWDER));
         if (this.timer >= this.recipe.time) {
             Multiblocks.TREE_RITUAL.forEach(this.ritualPos, 'G', (pos, matcher) -> {
                 this.level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
@@ -162,7 +164,7 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
                 Queue<BlockPos> queue = new LinkedList<>(this.naturesaura_plus$treeCache);
                 Set<BlockPos> visited = new HashSet<>(this.naturesaura_plus$treeCache);
 
-                while (!queue.isEmpty() && leavesToHarvest.size() < 1500) {
+                while (!queue.isEmpty() && leavesToHarvest.size() < Config.maxRitualLeaves) {
                     BlockPos current = queue.poll();
 
                     for (Direction dir : Direction.values()) {
@@ -182,11 +184,11 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
 
                 for (BlockPos leafPos : leavesToHarvest) {
                     level.setBlockAndUpdate(leafPos, Blocks.AIR.defaultBlockState());
-                    PacketHandler.sendToAllAround(level, leafPos, 32, new PacketParticles((float) leafPos.getX(), (float) leafPos.getY(), (float) leafPos.getZ(), PacketParticles.Type.TR_DISAPPEAR, new int[0]));
+                    PacketHandler.sendToAllAround(level, leafPos, 32, new PacketParticles((float) leafPos.getX(), (float) leafPos.getY(), (float) leafPos.getZ(), PacketParticles.Type.TR_DISAPPEAR));
                 }
                 for (BlockPos logPos : this.naturesaura_plus$treeCache) {
                     level.setBlockAndUpdate(logPos, Blocks.AIR.defaultBlockState());
-                    PacketHandler.sendToAllAround(level, logPos, 32, new PacketParticles((float) logPos.getX(), (float) logPos.getY(), (float) logPos.getZ(), PacketParticles.Type.TR_DISAPPEAR, new int[0]));
+                    PacketHandler.sendToAllAround(level, logPos, 32, new PacketParticles((float) logPos.getX(), (float) logPos.getY(), (float) logPos.getZ(), PacketParticles.Type.TR_DISAPPEAR));
                 }
             }
 
@@ -194,8 +196,8 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
                 BlockEntity tile = this.level.getBlockEntity(pos);
                 if (tile instanceof BlockEntityWoodStand stand) {
                     if (!stand.items.getStackInSlot(0).isEmpty()) {
-                        PacketHandler.sendToAllAround(this.level, this.worldPosition, 32, new PacketParticles((float) stand.getBlockPos().getX(), (float) stand.getBlockPos().getY(), (float) stand.getBlockPos().getZ(), PacketParticles.Type.TR_CONSUME_ITEM, new int[0]));
-                        this.level.playSound((Player) null, (double) stand.getBlockPos().getX() + (double) 0.5F, (double) stand.getBlockPos().getY() + (double) 0.5F, (double) stand.getBlockPos().getZ() + (double) 0.5F, SoundEvents.WOOD_STEP, SoundSource.BLOCKS, 0.5F, 1.0F);
+                        PacketHandler.sendToAllAround(this.level, this.worldPosition, 32, new PacketParticles((float) stand.getBlockPos().getX(), (float) stand.getBlockPos().getY(), (float) stand.getBlockPos().getZ(), PacketParticles.Type.TR_CONSUME_ITEM));
+                        this.level.playSound(null, (double) stand.getBlockPos().getX() + (double) 0.5F, (double) stand.getBlockPos().getY() + (double) 0.5F, (double) stand.getBlockPos().getZ() + (double) 0.5F, SoundEvents.WOOD_STEP, SoundSource.BLOCKS, 0.5F, 1.0F);
                         stand.items.setStackInSlot(0, ItemStack.EMPTY);
                         stand.sendToClients();
                     }
@@ -206,29 +208,13 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
 
             ItemEntity item = new ItemEntity(this.level, (double) this.ritualPos.getX() + (double) 0.5F, (double) this.ritualPos.getY() + (double) 4.5F, (double) this.ritualPos.getZ() + (double) 0.5F, this.recipe.result.copy());
             this.level.addFreshEntity(item);
-            PacketHandler.sendToAllAround(this.level, this.worldPosition, 32, new PacketParticles((float) item.getX(), (float) item.getY(), (float) item.getZ(), PacketParticles.Type.TR_SPAWN_RESULT, new int[0]));
-            this.level.playSound((Player) null, (double) this.worldPosition.getX() + (double) 0.5F, (double) this.worldPosition.getY() + (double) 0.5F, (double) this.worldPosition.getZ() + (double) 0.5F, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 0.65F, 1.0F);
+            PacketHandler.sendToAllAround(this.level, this.worldPosition, 32, new PacketParticles((float) item.getX(), (float) item.getY(), (float) item.getZ(), PacketParticles.Type.TR_SPAWN_RESULT));
+            this.level.playSound(null, (double) this.worldPosition.getX() + (double) 0.5F, (double) this.worldPosition.getY() + (double) 0.5F, (double) this.worldPosition.getZ() + (double) 0.5F, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 0.65F, 1.0F);
             this.ritualPos = null;
             this.recipe = null;
             this.timer = 0;
         }
-//         else if (isOverHalf && !wasOverHalf) {
-//            Multiblocks.TREE_RITUAL.forEach(this.ritualPos, 'W', (pos, matcher) -> {
-//                BlockEntity tile = this.level.getBlockEntity(pos);
-//                if (tile instanceof BlockEntityWoodStand stand) {
-//                    if (!stand.items.getStackInSlot(0).isEmpty()) {
-//                        PacketHandler.sendToAllAround(this.level, this.worldPosition, 32, new PacketParticles((float) stand.getBlockPos().getX(), (float) stand.getBlockPos().getY(), (float) stand.getBlockPos().getZ(), PacketParticles.Type.TR_CONSUME_ITEM, new int[0]));
-//                        this.level.playSound((Player)null, (double) stand.getBlockPos().getX() + (double)0.5F, (double) stand.getBlockPos().getY() + (double)0.5F, (double) stand.getBlockPos().getZ() + (double)0.5F, SoundEvents.WOOD_STEP, SoundSource.BLOCKS, 0.5F, 1.0F);
-//                        stand.sendToClients();
-//                    }
-//                }
-//
-//                return true;
-//            });
-//        }
-
     }
-
 }
 
 

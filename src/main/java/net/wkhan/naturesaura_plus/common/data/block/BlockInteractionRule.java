@@ -59,7 +59,7 @@ public class BlockInteractionRule {
         }
         if (itemId.startsWith("#")) {
             String tagId = itemId.substring(1);
-            this.cachedItemTag = TagKey.create(Registries.ITEM, new ResourceLocation(tagId));
+            this.cachedItemTag = TagKey.create(Registries.ITEM, ResourceLocation.tryParse(tagId));
             return true;
         }
         ResourceLocation loc = ResourceLocation.tryParse(itemId);
@@ -83,7 +83,7 @@ public class BlockInteractionRule {
         }
         if (blockId.startsWith("#")) {
             String tagId = blockId.substring(1);
-            this.cachedBlockTag = TagKey.create(Registries.BLOCK, new ResourceLocation(tagId));
+            this.cachedBlockTag = TagKey.create(Registries.BLOCK, ResourceLocation.tryParse(tagId));
             return true;
         }
         ResourceLocation loc = ResourceLocation.tryParse(blockId);

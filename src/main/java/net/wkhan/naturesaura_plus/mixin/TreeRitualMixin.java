@@ -18,9 +18,9 @@ import java.util.function.BiFunction;
 @Mixin(Multiblock.class)
 public abstract class TreeRitualMixin {
 
-    @Shadow public abstract BlockPos getStart(BlockPos center);
-    @Shadow public abstract char getChar(BlockPos offset);
-    @Shadow public abstract boolean forEach(BlockPos center, char c, BiFunction<BlockPos, Matcher, Boolean> function);
+    @Shadow(remap=false) public abstract BlockPos getStart(BlockPos center);
+    @Shadow(remap=false) public abstract char getChar(BlockPos offset);
+    @Shadow(remap=false) public abstract boolean forEach(BlockPos center, char c, BiFunction<BlockPos, Matcher, Boolean> function);
 
     @Inject(
             method = "isComplete",

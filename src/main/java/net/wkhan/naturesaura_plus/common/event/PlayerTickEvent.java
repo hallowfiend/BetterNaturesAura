@@ -11,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.wkhan.naturesaura_plus.NaturesAuraPlus;
 import top.theillusivec4.curios.api.CuriosApi;
@@ -21,8 +20,6 @@ import static net.wkhan.naturesaura_plus.common.item.ItemBreakPreventionAll.isTo
 
 @Mod.EventBusSubscriber(modid = NaturesAuraPlus.MODID)
 public class PlayerTickEvent {
-
-    public static final boolean CURIOS_LOADED = ModList.get().isLoaded("curios");
 
     @SubscribeEvent
     public static void onPlayerTick (TickEvent.PlayerTickEvent event) {
@@ -39,7 +36,7 @@ public class PlayerTickEvent {
                 }
             }
 
-        if (CURIOS_LOADED && tickCounter == 1) handleCuriosUnequip(player);
+        if (NaturesAuraPlus.isCuriosLoaded && tickCounter == 1) handleCuriosUnequip(player);
     }
 
     private static void unequipVanillaItem(Player player, EquipmentSlot slot, ItemStack stack) {

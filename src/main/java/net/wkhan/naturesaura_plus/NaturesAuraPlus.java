@@ -3,6 +3,7 @@ package net.wkhan.naturesaura_plus;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -14,9 +15,17 @@ public class NaturesAuraPlus
 {
     public static final String MODID = "naturesaura_plus";
 
+    public static boolean isKubeJsLoaded;
+    public static boolean isSophisticatedStorageLoaded;
+    public static boolean isCuriosLoaded;
+
     public NaturesAuraPlus(FMLJavaModLoadingContext context)
     {
         IEventBus modEventBus = context.getModEventBus();
+
+        isKubeJsLoaded = ModList.get().isLoaded("kubejs");
+        isSophisticatedStorageLoaded = ModList.get().isLoaded("sophisticatedstorage"); //Check this one
+        isCuriosLoaded = ModList.get().isLoaded("curios");
 
         ModItems.register(modEventBus);
 
