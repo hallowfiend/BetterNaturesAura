@@ -102,4 +102,44 @@ public class NaturesAuraPlusUtils {
 
         return foundTargets;
     }
+
+    public static class circularBuffer<T> {
+        private final int capacity;
+        private final Object[] buffer;
+        private int head = 0;
+        private int tail = 0;
+        private int count = 0;
+
+        public circularBuffer(int capacity) {
+            this.capacity = capacity;
+            this.buffer = new Object[capacity];
+        }
+
+        public T readObject() {
+            T oldestBlock = (T) buffer[head];
+            head = (head + 1) % capacity;
+            count -= 1;
+            return oldestBlock;
+        }
+
+        public void writeObject(T object) {
+            buffer[tail] = object;
+            if (count == capacity) {
+                head = tail;
+            }
+            else count++;
+            tail = (tail + 1) % capacity;
+        }
+
+        public int countObject(T targetObject) {
+            int count = 0;
+            for (Object o : buffer) {
+                if (o == null) continue;
+                if (o == targetObject || o.equals(targetObject)) {
+                    count++;
+                }
+            }
+            return count;
+        }
+    }
 }

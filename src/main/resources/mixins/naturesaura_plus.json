@@ -5,14 +5,15 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "mixins.naturesaura_plus.refmap.json",
   "mixins": [
-    "ItemStackMixin",
-    "BlockDispenserMixin",
-    "AuraRepairMixin",
-    "MossGenMixin",
-    "TreeRitualMixin",
-    "BlockEntityWoodStandMixin",
-    "BlockEntityHopperUpgradeMixin",
-    "ItemLootFinderMixin"
+    "item.ItemStackMixin",
+    "block.BlockDispenserMixin",
+    "misc.AuraRepairMixin",
+    "auragen.MossGenMixin",
+    "misc.TreeRitualMixin",
+    "block.BlockEntityWoodStandMixin",
+    "block.BlockEntityHopperUpgradeMixin",
+    "item.ItemLootFinderMixin",
+    "auragen.FlowerGenMixin"
   ],
   "client": [],
   "server": []

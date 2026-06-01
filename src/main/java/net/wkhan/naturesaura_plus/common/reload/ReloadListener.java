@@ -9,6 +9,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.wkhan.naturesaura_plus.common.data.*;
 import net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules;
+import net.wkhan.naturesaura_plus.common.data.auragen.FlowerGenRule;
 import net.wkhan.naturesaura_plus.common.data.auragen.MossGenRule;
 import net.wkhan.naturesaura_plus.common.data.auragen.ProjectileGenRule;
 import net.wkhan.naturesaura_plus.common.data.block.BlockInteractionRule;
@@ -38,6 +39,7 @@ public class ReloadListener
         AnvilCostRules.clear();
         AuraGenRules.projectileGenerationClear();
         AuraGenRules.mossGenerationClear();
+        AuraGenRules.flowerGenerationClear();
 
         List<String> loadedBlockRules = new ArrayList<>();
         List<String> loadedEntityRules = new ArrayList<>();
@@ -91,6 +93,13 @@ public class ReloadListener
                     rule.setSourceFile(fileId.toString());
                     loadedAuraRules.add(fileId.toString());
                     AuraGenRules.addMossGeneration(rule);
+                    return;
+                }
+                if ("auraGen:flowerGen".equals(type)) {
+                    FlowerGenRule rule = new Gson().fromJson(json, FlowerGenRule.class);
+                    rule.setSourceFile(fileId.toString());
+                    loadedAuraRules.add(fileId.toString());
+                    AuraGenRules.addFlowerGeneration(rule);
                     return;
                 }
                 System.err.println("Unknown rule type '" + type + "' in file: " + fileId);

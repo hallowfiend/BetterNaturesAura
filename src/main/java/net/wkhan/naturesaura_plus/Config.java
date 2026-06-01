@@ -22,18 +22,34 @@ public class Config
 
     private static final ForgeConfigSpec.IntValue LOOT_FINDER_AURA_COST = BUILDER
             .comment("The aura cost of using the loot finder item. (Default: 100,000)")
-            .defineInRange("maxRitualLogs", 100000, 0, 1200000);
+            .defineInRange("lootFinderAuraCost", 100000, 0, 1200000);
 
     private static final ForgeConfigSpec.IntValue LOOT_FINDER_RANGE = BUILDER
             .comment("Maximum range (in blocks) upto which loot finder item can detect treasure. (Default: 64)")
-            .defineInRange("maxRitualLogs", 64, 0, 1024);
+            .defineInRange("lootFinderRange", 64, 0, 1024);
 
     private static final ForgeConfigSpec.IntValue LOOT_FINDER_USE_COOLDOWN = BUILDER
             .comment("Cooldown set on loot finder item upon use, in ticks. (Default: 1,200)")
-            .defineInRange("maxRitualLogs", 1200, 0, 72000);
+            .defineInRange("lootFinderUseCooldownInTicks", 1200, 0, 72000);
+
+    private static final ForgeConfigSpec.IntValue FLOWER_GEN_RANGE = BUILDER
+            .comment("Cubical range in blocks of the flower generator. (Default: 3) \n(Note, does not affect vertical range)")
+            .defineInRange("flowerGenRange", 3, 1, 10);
+
+
+    private static final ForgeConfigSpec.IntValue FLOWER_GEN_MEMORY_SIZE = BUILDER
+            .comment("Number of flowers the flower aura generator block remembers when calculating aura generated amount. (Default: 3)")
+            .defineInRange("flowerGenMemorySize", 3, 0, 1000);
+
+    private static final ForgeConfigSpec.IntValue FLOWER_GEN_VITALITY_FLOOR = BUILDER
+            .comment("Essentially the lowest value of vitality upto which the flower generator generates aura. (Default: 100) \n(Note, beyond 100, the flower generator will generate aura at even 0 vitality, which is its hard floor cap. Check the formula on the wiki for more details.)")
+            .defineInRange("flowerGenVitalityFloor", 100, 0, 1000);
+
+    private static final ForgeConfigSpec.DoubleValue FLOWER_GEN_POW_FACTOR = BUILDER
+            .comment("The value of the power factor in the aura generation formula for flower generator. Check wiki for more info. (Default: 0.5)")
+            .defineInRange("flowerGenPowFactor", 0.5, -5, 10);
 
     //Make range config for moss gen
-    //Make Range config for flower gen
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
@@ -42,6 +58,10 @@ public class Config
     public static int lootFinderAuraCost;
     public static int lootFinderRange;
     public static int lootFinderUseCooldownInTicks;
+    public static int flowerGenRange;
+    public static int flowerGenMemorySize;
+    public static int flowerGenVitalityFloor;
+    public static double flowerGenPowFactor;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -50,5 +70,9 @@ public class Config
         lootFinderAuraCost = LOOT_FINDER_AURA_COST.get();
         lootFinderRange = LOOT_FINDER_RANGE.get();
         lootFinderUseCooldownInTicks = LOOT_FINDER_USE_COOLDOWN.get();
+        flowerGenRange = FLOWER_GEN_RANGE.get();
+        flowerGenMemorySize = FLOWER_GEN_MEMORY_SIZE.get();
+        flowerGenVitalityFloor = FLOWER_GEN_VITALITY_FLOOR.get();
+        flowerGenPowFactor = FLOWER_GEN_POW_FACTOR.get();
     }
 }
