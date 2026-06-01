@@ -1,4 +1,4 @@
-package net.wkhan.naturesaura_plus.mixin;
+package net.wkhan.naturesaura_plus.mixin.block;
 
 import de.ellpeck.naturesaura.blocks.tiles.BlockEntityHopperUpgrade;
 import de.ellpeck.naturesaura.blocks.tiles.BlockEntityImpl;

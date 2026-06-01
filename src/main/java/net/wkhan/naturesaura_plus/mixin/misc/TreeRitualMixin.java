@@ -1,4 +1,4 @@
-package net.wkhan.naturesaura_plus.mixin;
+package net.wkhan.naturesaura_plus.mixin.misc;
 
 import de.ellpeck.naturesaura.api.multiblock.IMultiblock;
 import de.ellpeck.naturesaura.api.multiblock.Matcher;

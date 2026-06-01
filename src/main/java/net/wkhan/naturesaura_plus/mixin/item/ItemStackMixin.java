@@ -1,4 +1,4 @@
-package net.wkhan.naturesaura_plus.mixin;
+package net.wkhan.naturesaura_plus.mixin.item;
 
 
 import net.minecraft.world.InteractionHand;

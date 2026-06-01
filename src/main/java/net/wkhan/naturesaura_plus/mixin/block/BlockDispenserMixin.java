@@ -1,4 +1,4 @@
-package net.wkhan.naturesaura_plus.mixin;
+package net.wkhan.naturesaura_plus.mixin.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSourceImpl;
