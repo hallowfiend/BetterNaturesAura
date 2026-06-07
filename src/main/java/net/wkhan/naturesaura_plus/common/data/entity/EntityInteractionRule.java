@@ -19,6 +19,9 @@ public class EntityInteractionRule {
     @SerializedName("entity")
     private String entityId;
 
+    @SerializedName("interaction")
+    private String interactionType;
+
     private transient Item cachedItem;
     private transient TagKey<Item> cachedItemTag;
     private transient EntityType<?> cachedEntity;
@@ -141,5 +144,8 @@ public class EntityInteractionRule {
     }
     public TagKey<Item> getTargetItemTag() {
         return cachedItemTag;
+    }
+    public String getInteractionType() {
+        return interactionType;
     }
 }

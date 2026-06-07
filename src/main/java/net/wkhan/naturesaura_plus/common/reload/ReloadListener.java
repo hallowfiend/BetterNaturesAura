@@ -55,7 +55,7 @@ public class ReloadListener
                 }
                 String type = json.get("type").getAsString();
 
-                if ("brokenPreventInteract:entity".equals(type)) {
+                if ("preventInteract:entity".equals(type)) {
                     EntityInteractionRule rule = new Gson().fromJson(json, EntityInteractionRule.class);
                     rule.setSourceFile(fileId.toString());
                     loadedEntityRules.add(fileId.toString());

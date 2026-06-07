@@ -114,4 +114,56 @@ public final class EntityInteractionRules {
 
         return false;
     }
+
+    public static EntityInteractionRule getRule(ItemStack stack, Entity entity) {
+        Item item = stack.getItem();
+        EntityType<?> entityType = entity.getType();
+        EntityItemPair key = new EntityItemPair(entityType, item);
+        EntityInteractionRule specificRule = RULE_CACHE.get(key);
+
+        if (specificRule != null) {
+            return specificRule;
+        }
+
+        key = new EntityItemPair("*", item);
+        specificRule = RULE_CACHE.get(key);
+        if (specificRule != null) return specificRule;
+
+        key = new EntityItemPair(entityType, "*");
+        specificRule = RULE_CACHE.get(key);
+        if (specificRule != null) return specificRule;
+
+        List<TagKey<Item>> validItemTags = stack.getTags().filter(EXPECTED_ITEM_TAGS::contains).toList();
+        List<TagKey<EntityType<?>>> validEntityTags = entity.getType().getTags().filter(EXPECTED_ENTITY_TAGS::contains).toList();
+
+        for (TagKey<Item> itemTag: validItemTags) {
+            key = new EntityItemPair(entityType, itemTag);
+            specificRule = RULE_CACHE.get(key);
+            if (specificRule != null) return specificRule;
+
+            key = new EntityItemPair("*", itemTag);
+            specificRule = RULE_CACHE.get(key);
+            if (specificRule != null) return specificRule;
+        }
+
+        for (TagKey<EntityType<?>> entityTag: validEntityTags) {
+            key = new EntityItemPair(entityTag, item);
+            specificRule = RULE_CACHE.get(key);
+            if (specificRule != null) return specificRule;
+
+            key = new EntityItemPair(entityTag, "*");
+            specificRule = RULE_CACHE.get(key);
+            if (specificRule != null) return specificRule;
+        }
+
+        for (TagKey<EntityType<?>> entityTag: validEntityTags) {
+            for (TagKey<Item> itemTag: validItemTags) {
+                key = new EntityItemPair(entityTag, itemTag);
+                specificRule = RULE_CACHE.get(key);
+                if (specificRule != null) return specificRule;
+            }
+        }
+
+        return null;
+    }
 }
