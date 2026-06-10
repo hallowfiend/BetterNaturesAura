@@ -28,6 +28,7 @@ import net.wkhan.naturesaura_plus.NaturesAuraPlus;
 
 import java.util.Optional;
 
+//This whole class is practically ripped straight from natures aura, swapping TamableAnimal class check for AbstractHorse class check
 @Mod.EventBusSubscriber(modid = NaturesAuraPlus.MODID)
 public class HorsePetReviverEvent {
 
