@@ -18,8 +18,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
@@ -34,7 +32,7 @@ import java.util.List;
 public class ItemBreakPreventionAll extends Item {
     public ItemBreakPreventionAll(Properties p_41383_) {
         super(p_41383_);
-        MinecraftForge.EVENT_BUS.register(new Events());
+        MinecraftForge.EVENT_BUS.register(new ItemBreakPreventionEventListener());
     }
 
     public static boolean isTokenAppliedBroken(ItemStack stack) {
@@ -52,8 +50,8 @@ public class ItemBreakPreventionAll extends Item {
         return stack.getTag().getBoolean("naturesaura_plus:break_prevention");
     }
 
-    public static class Events {
-        public Events() {}
+    public static class ItemBreakPreventionEventListener {
+        public ItemBreakPreventionEventListener() {}
 
         @SubscribeEvent
         public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
@@ -134,8 +132,8 @@ public class ItemBreakPreventionAll extends Item {
 
         //Portion of code of this method is derived from NaturesAura - Credit to Ellpeck.
         @SubscribeEvent
-        @OnlyIn(Dist.CLIENT)
         public void onTooltip(ItemTooltipEvent event) {
+            if (event.getEntity() == null || !event.getEntity().level().isClientSide) return;
             ItemStack stack = event.getItemStack();
             if (!isTokenApplied(stack)) return;
             List<Component> tooltip = event.getToolTip();

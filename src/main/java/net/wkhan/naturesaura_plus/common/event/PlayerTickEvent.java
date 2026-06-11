@@ -13,10 +13,9 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.wkhan.naturesaura_plus.NaturesAuraPlus;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 
 import static net.wkhan.naturesaura_plus.common.item.ItemBreakPreventionAll.isTokenAppliedBroken;
+import static net.wkhan.naturesaura_plus.compat.curios.NaturesAuraPlusCuriosUtil.handleCuriosUnequip;
 
 @Mod.EventBusSubscriber(modid = NaturesAuraPlus.MODID)
 public class PlayerTickEvent {
@@ -42,25 +41,11 @@ public class PlayerTickEvent {
     private static void unequipVanillaItem(Player player, EquipmentSlot slot, ItemStack stack) {
             player.setItemSlot(slot, ItemStack.EMPTY);
             handleItemTransfer(player, stack, "Some of your armor broke!");
-        }
-
-    private static void handleCuriosUnequip(Player player) {
-        var optionalHandler = CuriosApi.getCuriosHelper().getCuriosHandler(player);
-        if (!optionalHandler.isPresent()) return;
-
-        ICuriosItemHandler handler = optionalHandler.resolve().orElseThrow();
-        var equipped = handler.getEquippedCurios();
-
-        for (int i = 0; i < equipped.getSlots(); i++) {
-            ItemStack stack = equipped.getStackInSlot(i);
-            if (isTokenAppliedBroken(stack)) {
-                ItemStack extracted = equipped.extractItem(i, 1, false);
-                handleItemTransfer(player, extracted, "One of your curio broke!");
-            }
-        }
     }
 
-    private static void handleItemTransfer(Player player, ItemStack stack, String messagePrefix) {
+
+
+    public static void handleItemTransfer(Player player, ItemStack stack, String messagePrefix) {
         if (stack.isEmpty()) return;
 
         if (!player.getInventory().add(stack)) {

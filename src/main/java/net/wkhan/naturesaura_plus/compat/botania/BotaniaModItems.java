@@ -1,4 +1,4 @@
-package net.wkhan.naturesaura_plus.common.item;
+package net.wkhan.naturesaura_plus.compat.botania;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;

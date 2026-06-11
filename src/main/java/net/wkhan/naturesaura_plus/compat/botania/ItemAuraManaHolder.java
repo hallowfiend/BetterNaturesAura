@@ -1,4 +1,4 @@
-package net.wkhan.naturesaura_plus.common.item;
+package net.wkhan.naturesaura_plus.compat.botania;
 
 import de.ellpeck.naturesaura.Helper;
 import de.ellpeck.naturesaura.api.NaturesAuraAPI;
@@ -11,6 +11,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
@@ -33,13 +34,13 @@ import vazkii.botania.api.mana.ManaItem;
 
 import java.util.Optional;
 
-public class ItemAuraManaHolder extends Item implements ICurioItem { //Make this not implement ICurioItem and then handle it safely
+public class ItemAuraManaHolder extends Item{ //Make this not implement ICurioItem and then handle it safely
     public ItemAuraManaHolder(Properties p_41383_) {
         super(p_41383_);
-        MinecraftForge.EVENT_BUS.register(new Events());
+        MinecraftForge.EVENT_BUS.register(new ItemAuraManaHolderEventListener());
     }
         // Add creative stack to creative mode tab
-    private static final int MAX_AURA = 20000; //make config
+    private static final int MAX_AURA = 400000; //make config
     private static final int MAX_MANA = 500000; //make config
     private static final String MANA_TAG = "mana";
     private static final String AURA_TAG = "aura";
@@ -57,11 +58,14 @@ public class ItemAuraManaHolder extends Item implements ICurioItem { //Make this
         return stack.hasTag() && stack.getTag().getBoolean(CREATIVE_TAG);
     }
 
-    private static void setCreativeStack(ItemStack stack) {
-        stack.getOrCreateTag().putBoolean(CREATIVE_TAG, true);
+    public static void setCreativeStack(ItemStack stack) {
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.putBoolean(CREATIVE_TAG, true);
+        tag.putInt(AURA_TAG,MAX_AURA);
+        tag.putInt(MANA_TAG,MAX_MANA);
     }
 
-    public static class DualAuraManaItemImpl implements ManaItem, IAuraContainer, ICapabilityProvider {
+    public static class DualAuraManaItemImpl implements ICurioItem, ManaItem, IAuraContainer, ICapabilityProvider {
         private final ItemStack stack;
         public DualAuraManaItemImpl(ItemStack stack) {
             this.stack = stack;
@@ -69,6 +73,7 @@ public class ItemAuraManaHolder extends Item implements ICurioItem { //Make this
 
         private final LazyOptional<IAuraContainer> auraCapOpt = LazyOptional.of(() -> this);
         private final LazyOptional<ManaItem> manaCapOpt = LazyOptional.of(() -> this);
+
 
         @Override
         public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
@@ -145,6 +150,7 @@ public class ItemAuraManaHolder extends Item implements ICurioItem { //Make this
         }
 
         public void setMana(ItemStack stack, int mana) {
+            if (isCreativeStack(stack)) return;
             if (mana > 0) {
                 stack.getOrCreateTag().putInt(MANA_TAG,mana);
                 return;
@@ -178,26 +184,38 @@ public class ItemAuraManaHolder extends Item implements ICurioItem { //Make this
         }
     }
 
-    //Ripped Straight from Elpeck's class, only changes are to fix weird issues.
     @Override
     public void inventoryTick(ItemStack stackIn, Level levelIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (!levelIn.isClientSide && entityIn instanceof Player player && player.isShiftKeyDown()) {
-            LazyOptional<IAuraContainer> containerCap = stackIn.getCapability(NaturesAuraAPI.CAP_AURA_CONTAINER);
-            if (!containerCap.isPresent()) return;
-            IAuraContainer container = containerCap.resolve().get();
-            for (int i = 0; i < player.getInventory().getContainerSize() + 1; i++) { //This means i need to fix that mixin as well? (+1 added hoping thats offhand, idk)
-                ItemStack stack = player.getInventory().getItem(i);
-                LazyOptional<IAuraRecharge> recharge = stack.getCapability(NaturesAuraAPI.CAP_AURA_RECHARGE);
-                if (recharge.isPresent()) {
-                    if (recharge.resolve().get().rechargeFromContainer(container, itemSlot, i, player.getInventory().selected == i)) break;
-                } else if (stack.getEnchantmentLevel(ModEnchantments.AURA_MENDING) > 0) {
-                    int mainSize = player.getInventory().items.size();
-                    boolean isArmor = i >= mainSize && i < mainSize + player.getInventory().armor.size() + 1;
-                    if ((isArmor || player.getInventory().selected == i) && Helper.rechargeAuraItem(stack, container, 1000)) break; //Maybe make this config driven
+        if (levelIn.isClientSide || !(entityIn instanceof Player player) || !player.isShiftKeyDown()) return;
+        LazyOptional<IAuraContainer> containerCap = stackIn.getCapability(NaturesAuraAPI.CAP_AURA_CONTAINER);
+        if (!containerCap.isPresent()) return;
+        Inventory inventory = player.getInventory();
+        IAuraContainer container = containerCap.resolve().get();
+        int[] slotsToRecharge = new int[]{
+                inventory.selected, // Mainhand-slot
+                40,                 // Offhand-slot
+                36, 37, 38, 39      // Armor-slots (Boots, Leggings, Chestplate, Helmet)
+        };
+
+        for (int i : slotsToRecharge) {
+            ItemStack stack = inventory.getItem(i);
+            if (stack.isEmpty()) continue;
+            LazyOptional<IAuraRecharge> recharge = stack.getCapability(NaturesAuraAPI.CAP_AURA_RECHARGE);
+            if (recharge.isPresent()) {
+                boolean isSelectedItem = (i == inventory.selected || i == 40);
+                if (recharge.resolve().get().rechargeFromContainer(container, itemSlot, i, isSelectedItem)) {
+                    break;
+                }
+            }
+            else if (stack.getEnchantmentLevel(ModEnchantments.AURA_MENDING) > 0) {
+                boolean isArmor = (i >= 36 && i <= 39);
+                boolean isHand = (i == inventory.selected || i == 40);
+
+                if ((isArmor || isHand) && Helper.rechargeAuraItem(stack, container, 1000)) {
+                    break;
                 }
             }
         }
-
     }
 
     @Override
@@ -215,7 +233,8 @@ public class ItemAuraManaHolder extends Item implements ICurioItem { //Make this
 
     @Override
     public boolean isBarVisible(ItemStack stack) {
-        return !isCreativeStack(stack);
+//        return !isCreativeStack(stack);
+          return true;
     }
 
     @Override
@@ -227,11 +246,11 @@ public class ItemAuraManaHolder extends Item implements ICurioItem { //Make this
 
         CompoundTag tag = stack.getTag();
         displayMode = tag.getString(DISPLAY_MODE_TAG);
-        if (displayMode.equals("aura")) {
+        if (displayMode.equals(AURA_TAG)) {
             aura = tag.getInt(AURA_TAG);
             return Math.round((float) (13 * aura) / MAX_AURA);
         }
-        else if (displayMode.equals("mana")) {
+        else if (displayMode.equals(MANA_TAG)) {
             mana = tag.getInt(MANA_TAG);
             return Math.round((float) (13 * mana) / MAX_MANA);
         }
@@ -245,17 +264,18 @@ public class ItemAuraManaHolder extends Item implements ICurioItem { //Make this
 
         CompoundTag tag = stack.getTag();
         displayMode = tag.getString(DISPLAY_MODE_TAG);
-        if (displayMode.equals("aura")) {
-            return 0xFF1D2E28;
+        if (displayMode.equals(AURA_TAG)) {
+            return 0xFF4CAF50;
         }
-        else if (displayMode.equals("mana")) {
+        else if (displayMode.equals(MANA_TAG)) {
             return 0xFF2196F3;
         }
         return 0xFFFFFFFF;
     }
 
 
-    public static class Events {
+    public static class ItemAuraManaHolderEventListener {
+        public ItemAuraManaHolderEventListener() {}
 
         @SubscribeEvent
         public void onAirClick(PlayerInteractEvent.RightClickItem event) {
@@ -276,13 +296,13 @@ public class ItemAuraManaHolder extends Item implements ICurioItem { //Make this
                     1.0F,
                     1.0F
             );
-            if (tag.getString(DISPLAY_MODE_TAG).equals("aura")) {
-                tag.putString(DISPLAY_MODE_TAG, "mana");
+            if (tag.getString(DISPLAY_MODE_TAG).equals(AURA_TAG)) {
+                tag.putString(DISPLAY_MODE_TAG, MANA_TAG);
                 event.setResult(Event.Result.ALLOW);
                 player.swing(InteractionHand.MAIN_HAND, true);
                 return;
             }
-            tag.putString(DISPLAY_MODE_TAG, "aura");
+            tag.putString(DISPLAY_MODE_TAG, AURA_TAG);
         }
     }
 }

@@ -8,7 +8,6 @@
   "mixins": [
     "item.ItemStackMixin",
     "block.BlockDispenserMixin",
-    "misc.AuraRepairMixin",
     "auragen.MossGenMixin",
     "misc.TreeRitualMixin",
     "block.BlockEntityWoodStandMixin",
@@ -16,7 +15,8 @@
     "item.ItemLootFinderMixin",
     "auragen.FlowerGenMixin",
     "event.ClientEventMixin",
-    "event.TreeFertilizerGrowFeatureEventPostMixin"
+    "event.TreeFertilizerGrowFeatureEventPostMixin",
+    "item.ItemAuraCacheMixin"
   ],
   "client": [],
   "server": []
