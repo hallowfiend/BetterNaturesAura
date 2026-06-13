@@ -5,6 +5,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.wkhan.naturesaura_plus.compat.botania.ItemAuraManaHolder;
+//import net.wkhan.naturesaura_plus.compat.botania.ItemAuraManaHolder;
 
 import static net.wkhan.naturesaura_plus.NaturesAuraPlus.isBotaniaLoaded;
 import static net.wkhan.naturesaura_plus.NaturesAuraPlus.isCuriosLoaded;
@@ -15,8 +16,8 @@ public class AttachCurioCapabilityEvent {
 
     @SubscribeEvent
     public static void onAttachCapabilities(AttachCapabilitiesEvent<ItemStack> event) {
-//        ResourceLocation key = getId(event.getObject().getItem());
-        if (!isBotaniaLoaded || !(event.getObject().getItem() instanceof ItemAuraManaHolder)) return; //make it a safe curio attachment
+//        ResourceLocation key = getId(event.getObject().getItem()); instanceof ItemAuraManaHolder
+        if (!isBotaniaLoaded || !(event.getObject().getItem() instanceof ItemAuraManaHolder)) return;
         if (isCuriosLoaded) attachMergedCapability(event);
     }
 }

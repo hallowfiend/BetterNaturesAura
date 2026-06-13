@@ -31,9 +31,7 @@ public class NaturesAuraPlusCuriosUtil {
 
     private static final Capability<ICurio> CURIOS_CAP = CapabilityManager.get(new CapabilityToken<>() {});
 
-    // This method is only read by the JVM if Curios is active, preventing crashes
     public static void attachMergedCapability(AttachCapabilitiesEvent<ItemStack> event) {
-        // An inline anonymous wrapper that implements ICurioItem instead of the base item class
         final ItemStack stack = event.getObject();
 
         ICurio curioWrapper = new ICurio() {
@@ -79,7 +77,6 @@ public class NaturesAuraPlusCuriosUtil {
             }
         };
 
-        // Standard Forge Capability injection logic using the inline wrapper
         ICapabilityProvider provider = new ICapabilityProvider() {
             private final LazyOptional<ICurio> curioCapOpt = LazyOptional.of(() -> curioWrapper);
 
