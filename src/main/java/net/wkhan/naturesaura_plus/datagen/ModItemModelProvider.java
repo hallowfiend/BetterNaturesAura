@@ -8,7 +8,7 @@ import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.RegistryObject;
 import net.wkhan.naturesaura_plus.NaturesAuraPlus;
-import net.wkhan.naturesaura_plus.common.item.BotaniaModItems;
+import net.wkhan.naturesaura_plus.compat.botania.BotaniaModItems;
 import net.wkhan.naturesaura_plus.common.item.ModItems;
 
 import static net.wkhan.naturesaura_plus.NaturesAuraPlus.isBotaniaLoaded;
@@ -22,6 +22,8 @@ public class ModItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         simpleItem(ModItems.BREAK_PREVENTION);
         if(isBotaniaLoaded) simpleItem(BotaniaModItems.AURA_MANA_HOLDER);
+        simpleItem(ModItems.COFFEE);
+        simpleItem(ModItems.AURA_COFFEE);
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {
