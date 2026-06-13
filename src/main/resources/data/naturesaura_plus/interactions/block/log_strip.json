@@ -1,5 +1,5 @@
 {
-  "type": "brokenPreventInteract:block",
+  "type": "broken_prevent_interact:block",
   "item": "#minecraft:axes",
   "block": "#minecraft:logs"
 }

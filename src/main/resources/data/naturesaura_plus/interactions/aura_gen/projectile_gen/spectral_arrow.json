@@ -1,5 +1,5 @@
 {
-  "type": "auraGen:projectileGen",
+  "type": "aura_gen:projectile_gen",
   "projectile": "minecraft:spectral_arrow",
   "aura": 40000
 }

@@ -55,21 +55,21 @@ public class ReloadListener
                 }
                 String type = json.get("type").getAsString();
 
-                if ("preventInteract:entity".equals(type)) {
+                if ("prevent_interact:entity".equals(type)) {
                     EntityInteractionRule rule = new Gson().fromJson(json, EntityInteractionRule.class);
                     rule.setSourceFile(fileId.toString());
                     loadedEntityRules.add(fileId.toString());
                     EntityInteractionRules.add(rule);
                     return;
                 }
-                if ("brokenPreventInteract:block".equals(type)) {
+                if ("broken_prevent_interact:block".equals(type)) {
                     BlockInteractionRule rule = new Gson().fromJson(json, BlockInteractionRule.class);
                     rule.setSourceFile(fileId.toString());
                     loadedBlockRules.add(fileId.toString());
                     BlockInteractionRules.add(rule);
                     return;
                 }
-                if ("anvilCost:applySteelToken".equals(type)) {
+                if ("anvil_cost:apply_steel_token".equals(type)) {
                     if(!json.has("levels")) {
                         System.err.println("Missing 'levels' field in anvil cost file: " + fileId);
                         return;
@@ -81,21 +81,21 @@ public class ReloadListener
                         return;
                     }
                 }
-                if ("auraGen:projectileGen".equals(type)) {
+                if ("aura_gen:projectile_gen".equals(type)) {
                     ProjectileGenRule rule = new Gson().fromJson(json, ProjectileGenRule.class);
                     rule.setSourceFile(fileId.toString());
                     loadedAuraRules.add(fileId.toString());
                     AuraGenRules.addProjectileGeneration(rule);
                     return;
                 }
-                if ("auraGen:mossGen".equals(type)) {
+                if ("aura_gen:moss_gen".equals(type)) {
                     MossGenRule rule = new Gson().fromJson(json, MossGenRule.class);
                     rule.setSourceFile(fileId.toString());
                     loadedAuraRules.add(fileId.toString());
                     AuraGenRules.addMossGeneration(rule);
                     return;
                 }
-                if ("auraGen:flowerGen".equals(type)) {
+                if ("aura_gen:flower_gen".equals(type)) {
                     FlowerGenRule rule = new Gson().fromJson(json, FlowerGenRule.class);
                     rule.setSourceFile(fileId.toString());
                     loadedAuraRules.add(fileId.toString());

@@ -1,0 +1,6 @@
+{
+  "type": "aura_gen:moss_gen",
+  "block_to_convert": "minecraft:mossy_cobblestone",
+  "block_result": "minecraft:cobblestone",
+  "aura_gain": 4000
+}

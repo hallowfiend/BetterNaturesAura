@@ -1,6 +1,10 @@
 {
   "info.naturesaura_plus.break_prevention_token": "Token of Fortitude Applied",
   "info.naturesaura_plus.broken": " (Broken)",
+  "info.naturesaura_plus.aura_coffee": "It tastes bitter, but it smells like home.",
 
-  "item.naturesaura_plus.break_prevention_token": "Token of Fortitude"
+  "item.naturesaura_plus.break_prevention_token": "Token of Fortitude",
+  "item.naturesaura_plus.aura_mana_holder": "Auric-Mana Accretion Disk",
+  "item.naturesaura_plus.coffee": "Cup of Coffee",
+  "item.naturesaura_plus.aura_coffee": "Cup of Aura Coffee"
 }

@@ -1,5 +1,5 @@
 {
-  "type": "auraGen:flowerGen",
+  "type": "aura_gen:flower_gen",
   "block_to_convert": "minecraft:sunflower",
   "aura_gain": 10000,
   "lucidity": 10,

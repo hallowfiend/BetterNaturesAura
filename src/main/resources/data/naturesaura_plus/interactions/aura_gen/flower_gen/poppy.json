@@ -1,5 +1,5 @@
 {
-  "type": "auraGen:flowerGen",
+  "type": "aura_gen:flower_gen",
   "block_to_convert": "minecraft:poppy",
   "aura_gain": 100000,
   "lucidity": 0,

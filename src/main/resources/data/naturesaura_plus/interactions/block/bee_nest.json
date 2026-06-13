@@ -1,5 +1,5 @@
 {
-  "type": "brokenPreventInteract:block",
+  "type": "broken_prevent_interact:block",
   "block": "minecraft:bee_nest",
   "item": "minecraft:shears"
 }
