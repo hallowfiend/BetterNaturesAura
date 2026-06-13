@@ -7,7 +7,8 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.wkhan.naturesaura_plus.common.item.BotaniaModItems;
+import net.wkhan.naturesaura_plus.common.network.ModNetwork;
+import net.wkhan.naturesaura_plus.compat.botania.BotaniaModItems;
 import net.wkhan.naturesaura_plus.common.item.ModItems;
 import net.wkhan.naturesaura_plus.common.reload.ReloadListener;
 
@@ -35,6 +36,7 @@ public class NaturesAuraPlus
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.addListener(this::onReload);
+        ModNetwork.init();
 
         context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
