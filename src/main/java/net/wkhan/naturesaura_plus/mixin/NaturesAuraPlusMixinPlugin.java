@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class NaturesAuraPlusMixinPlugin implements IMixinConfigPlugin {
 
-    private boolean isCreateLoaded;
+    private boolean isCreateLoaded = false;
 
     @Override
     public void onLoad(String s) {

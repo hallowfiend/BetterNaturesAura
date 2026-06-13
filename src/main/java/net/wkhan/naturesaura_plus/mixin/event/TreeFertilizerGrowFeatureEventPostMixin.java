@@ -26,8 +26,7 @@ public class TreeFertilizerGrowFeatureEventPostMixin extends Item {
                     target = "Lnet/minecraft/world/item/context/UseOnContext;getClickedPos()Lnet/minecraft/core/BlockPos;",
                     ordinal = 2
             ),
-            remap = false
-
+            cancellable = true
     )
     private void naturesaura_plus$callGrowFeatureEventWithTreeFertilizer (UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
         Level level = context.getLevel();

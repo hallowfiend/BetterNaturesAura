@@ -3,7 +3,7 @@ package net.wkhan.naturesaura_plus.mixin.event;
 import de.ellpeck.naturesaura.events.ClientEvents;
 import de.ellpeck.naturesaura.items.ItemAuraCache;
 import net.minecraft.world.item.ItemStack;
-import net.wkhan.naturesaura_plus.common.item.ItemAuraManaHolder;
+import net.wkhan.naturesaura_plus.compat.botania.ItemAuraManaHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;

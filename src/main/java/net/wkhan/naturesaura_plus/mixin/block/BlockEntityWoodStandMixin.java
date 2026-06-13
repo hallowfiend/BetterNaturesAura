@@ -84,7 +84,6 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
                 if (state.is(ModTags.Blocks.TREE_RITUAL_STEMS)) {
                     continue;
                 }
-                this.naturesaura_plus$treeCache = null;
                 cir.setReturnValue(false);
                 return;
             }
@@ -209,9 +208,7 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
             this.level.addFreshEntity(item);
             PacketHandler.sendToAllAround(this.level, this.worldPosition, 32, new PacketParticles((float) item.getX(), (float) item.getY(), (float) item.getZ(), PacketParticles.Type.TR_SPAWN_RESULT));
             this.level.playSound(null, (double) this.worldPosition.getX() + (double) 0.5F, (double) this.worldPosition.getY() + (double) 0.5F, (double) this.worldPosition.getZ() + (double) 0.5F, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 0.65F, 1.0F);
-            this.ritualPos = null;
-            this.recipe = null;
-            this.timer = 0;
+            naturesaura_plus$abortRitual();
         }
     }
 }

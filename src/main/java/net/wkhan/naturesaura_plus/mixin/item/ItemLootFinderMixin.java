@@ -33,8 +33,7 @@ public abstract class ItemLootFinderMixin extends ItemImpl {
     @Inject(
             method = "use",
             at = @At("HEAD"),
-            cancellable = true,
-            remap = false
+            cancellable = true
     )
     private void naturesaura_plus$allowVarietyForLootFinder(
             Level levelIn, Player playerIn, InteractionHand handIn,

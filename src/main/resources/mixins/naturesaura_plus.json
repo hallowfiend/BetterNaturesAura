@@ -14,10 +14,11 @@
     "block.BlockEntityHopperUpgradeMixin",
     "item.ItemLootFinderMixin",
     "auragen.FlowerGenMixin",
-    "event.ClientEventMixin",
     "event.TreeFertilizerGrowFeatureEventPostMixin",
-    "item.ItemAuraCacheMixin"
+    "item.ItemAuraCacheMixin",
+    "event.ClientEventMixin"
   ],
-  "client": [],
+  "client": [
+  ],
   "server": []
 }
