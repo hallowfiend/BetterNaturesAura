@@ -38,7 +38,7 @@ public class ProjectileGenRule {
 
     private boolean projectileResolve(){
         if (projectileId == null || projectileId.isEmpty()) {
-            System.err.println("ProjectileAuraGen Rule Error: Missing Projectile ID'" + projectileId + "'");
+            System.err.println("ProjectileGen Rule Error: Missing Projectile ID'" + projectileId + "'");
             return false;
         }
         if (projectileId.startsWith("#")) {
@@ -51,7 +51,7 @@ public class ProjectileGenRule {
             this.cachedProjectileEntity = ForgeRegistries.ENTITY_TYPES.getValue(loc);
             return true;
         } else {
-            System.err.println("ProjectileAuraGen Rule Error: Invalid Entity ID '" + projectileId + "'");
+            System.err.println("ProjectileGen Rule Error: Invalid Entity ID '" + projectileId + "'");
             return false;
         }
     }
@@ -59,9 +59,9 @@ public class ProjectileGenRule {
 
     private void logError(String message) {
         if (sourceFile != null) {
-            System.err.println("ProjectileAuraGen Rule Error in " + sourceFile + ": " + message);
+            System.err.println("ProjectileGen Rule Error in " + sourceFile + ": " + message);
         } else {
-            System.err.println("ProjectileAuraGen Rule Error: (Invalid SourceFile? <- Seen when sourceFile resolves to null) " + message);
+            System.err.println("ProjectileGen Rule Error: (Invalid SourceFile? <- Seen when sourceFile resolves to null) " + message);
         }
     }
 
