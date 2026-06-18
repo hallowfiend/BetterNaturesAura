@@ -22,9 +22,9 @@ public record FlowerGenRule(
                     NaturesAuraPlusUtils.elementOrTagCodec(ForgeRegistries.BLOCKS, Registries.BLOCK)
                             .fieldOf("block_to_convert").forGetter(FlowerGenRule::blockToConvertId),
                     Codec.INT.fieldOf("aura_gain").forGetter(FlowerGenRule::auraAmount),
-                    Codec.BYTE.fieldOf("lucidity").forGetter(FlowerGenRule::lucidity),
+                    Codec.BYTE.optionalFieldOf("lucidity", (byte) 0).forGetter(FlowerGenRule::lucidity),
                     Codec.BYTE.fieldOf("obscurity").forGetter(FlowerGenRule::obscurity),
-                    Codec.FLOAT.fieldOf("obscurity_scale").forGetter(FlowerGenRule::obscurityScale)
+                    Codec.FLOAT.optionalFieldOf("obscurity_scale", 2F).forGetter(FlowerGenRule::obscurityScale)
             ).apply(instance, FlowerGenRule::new)
     );
 

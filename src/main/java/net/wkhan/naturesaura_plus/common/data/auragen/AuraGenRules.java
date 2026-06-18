@@ -17,11 +17,15 @@ public final class AuraGenRules {
     public record flowerValues(int auraAmount, byte lucidity, byte obscurity, float obscurityScale) {}
     public static final Map<Block, flowerValues> FLOWER_GENERATIONS = new HashMap<>();
 
+    public record slimeValues(int auraAmount, int slimeColor, int generationTimerModifier, float sizeModifier, boolean doSlimeSizeScaling, boolean doEntityDropLoot) {}
+    public static final Map<EntityType<?>, slimeValues> SLIME_GENERATIONS = new HashMap<>();
+
     public static HashMap<String, Integer> auraRulesCount() {
         HashMap<String, Integer> rulesCount = new HashMap<>();
         rulesCount.put("Projectile Generations", NaturesAuraAPI.PROJECTILE_GENERATIONS.size());
         rulesCount.put("Moss Generations", MOSS_GENERATIONS.size());
         rulesCount.put("Flower Generations", FLOWER_GENERATIONS.size());
+        rulesCount.put("Slime Generations", SLIME_GENERATIONS.size());
         return rulesCount;
     }
 
@@ -29,14 +33,12 @@ public final class AuraGenRules {
         NaturesAuraAPI.PROJECTILE_GENERATIONS.clear();
         MOSS_GENERATIONS.clear();
         FLOWER_GENERATIONS.clear();
+        SLIME_GENERATIONS.clear();
     }
 
     public static void addProjectileGeneration(ProjectileGenRule rule) {
-//        if (!rule.resolve()) return;
-
         int auraAmount = rule.auraAmount();
         EntityType<?> projectile = rule.getProjectile();
-
 
         if (projectile != null) {
                 NaturesAuraAPI.PROJECTILE_GENERATIONS.put(projectile, auraAmount);
@@ -84,6 +86,31 @@ public final class AuraGenRules {
         ForgeRegistries.BLOCKS.getValues().stream()
                 .filter(b -> b.defaultBlockState().is(flowerBlockTag))
                 .forEach(b -> FLOWER_GENERATIONS.put(b, new flowerValues(auraAmount, lucidity, obscurity, obscurityScale)));
+    } //refactored
+
+    public static void addSlimeGeneration(SlimeGenRule rule) {
+        int auraAmount = rule.auraAmount();
+        int slimeColor = rule.slimeColor();
+        int generationTimerModifier = rule.generationTimerModifier();
+        float sizeModifier = rule.sizeModifier();
+        boolean doSlimeSizeScaling = rule.doSlimeSizeScaling();
+        boolean doEntityDropLoot = rule.doEntityDropLoot();
+        EntityType<?> slime = rule.getEntity();
+
+        if (slime != null) {
+            SLIME_GENERATIONS.put(slime,
+                    new slimeValues(auraAmount,slimeColor,generationTimerModifier,sizeModifier,doSlimeSizeScaling,doEntityDropLoot));
+            return;
+        }
+
+        TagKey<EntityType<?>> slimeTag = rule.getEntityTag();
+        if (slimeTag != null) {
+            ForgeRegistries.ENTITY_TYPES.getValues().stream()
+                    .filter(e -> e.is(slimeTag))
+                    .forEach(e -> SLIME_GENERATIONS.put(e,
+                            new slimeValues(auraAmount,slimeColor,generationTimerModifier, sizeModifier,doSlimeSizeScaling,doEntityDropLoot))
+            );
+        }
     } //refactored
 }
 

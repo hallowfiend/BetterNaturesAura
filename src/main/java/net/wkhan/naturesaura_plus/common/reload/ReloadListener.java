@@ -10,10 +10,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.wkhan.naturesaura_plus.common.data.*;
-import net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules;
-import net.wkhan.naturesaura_plus.common.data.auragen.FlowerGenRule;
-import net.wkhan.naturesaura_plus.common.data.auragen.MossGenRule;
-import net.wkhan.naturesaura_plus.common.data.auragen.ProjectileGenRule;
+import net.wkhan.naturesaura_plus.common.data.auragen.*;
 import net.wkhan.naturesaura_plus.common.data.block.BlockInteractionRule;
 import net.wkhan.naturesaura_plus.common.data.block.BlockInteractionRules;
 import net.wkhan.naturesaura_plus.common.data.entity.EntityInteractionRule;
@@ -93,7 +90,7 @@ public class ReloadListener
                                     loadedAuraRules.add(fileId.toString());
                                     AuraGenRules.addMossGeneration(rule);
                                 });
-                    } //needs more than refactoring
+                    } //refactored
                     case "aura_gen:flower_gen" -> {
                         DataResult<FlowerGenRule> result = FlowerGenRule.CODEC.parse(JsonOps.INSTANCE, json)
                                 .mapError(originalError -> "Error in file '" + fileId + "': " + originalError);
@@ -103,6 +100,15 @@ public class ReloadListener
                                     AuraGenRules.addFlowerGeneration(rule);
                                 });
                     } //refactored
+                    case "aura_gen:slime_gen" -> { //refactored
+                        DataResult<SlimeGenRule> result = SlimeGenRule.CODEC.parse(JsonOps.INSTANCE, json)
+                                .mapError(originalError -> "Error in file '" + fileId + "': " + originalError);
+                        result.resultOrPartial(errorMessage -> System.err.println("SlimeGen JSON Error: " + errorMessage))
+                                .ifPresent(rule -> {
+                                    loadedAuraRules.add(fileId.toString());
+                                    AuraGenRules.addSlimeGeneration(rule);
+                                });
+                    }
 
                     default -> System.err.println("Unknown rule type '" + type + "' in file: " + fileId);
                 }
