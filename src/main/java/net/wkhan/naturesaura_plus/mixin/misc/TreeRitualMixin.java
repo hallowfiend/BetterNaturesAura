@@ -39,12 +39,12 @@ public abstract class TreeRitualMixin {
             var offset = pos.subtract(start);
             if (this.getChar(offset) == '0') {
                 boolean isValidBlock = level.getBlockState(pos).is(ModTags.Blocks.TREE_RITUAL_SAPLINGS) || level.getBlockState(pos).is(ModTags.Blocks.TREE_RITUAL_STEMS);
-                System.out.println("CENTER BLOCK FOUND: " + level.getBlockState(pos).getBlock() + " | IS IN TAG: " + isValidBlock);
+//                System.out.println("CENTER BLOCK FOUND: " + level.getBlockState(pos).getBlock() + " | IS IN TAG: " + isValidBlock);
                 return isValidBlock;
             }
             return matcher.check().matches(level, start, offset, pos, level.getBlockState(pos), this.getChar(offset));
         });
-        System.out.println("TREE RITUAL MIXIN FIRED! FINAL RESULT: " + result);
+//        System.out.println("TREE RITUAL MIXIN FIRED! FINAL RESULT: " + result);
         cir.setReturnValue(result);
     }
 }
