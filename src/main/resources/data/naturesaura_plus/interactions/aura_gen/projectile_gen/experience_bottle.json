@@ -1,5 +1,5 @@
 {
   "type": "aura_gen:projectile_gen",
   "projectile": "minecraft:experience_bottle",
-  "aura": 200000
+  "aura_gain": 200000
 }

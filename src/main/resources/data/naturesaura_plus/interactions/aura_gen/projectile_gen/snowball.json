@@ -1,5 +1,5 @@
 {
   "type": "aura_gen:projectile_gen",
   "projectile": "minecraft:snowball",
-  "aura": 7000
+  "aura_gain": 7000
 }

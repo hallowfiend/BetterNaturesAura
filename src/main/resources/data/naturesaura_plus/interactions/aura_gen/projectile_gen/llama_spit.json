@@ -1,5 +1,5 @@
 {
   "type": "aura_gen:projectile_gen",
   "projectile": "minecraft:llama_spit",
-  "aura": 100000
+  "aura_gain": 100000
 }

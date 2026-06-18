@@ -1,5 +1,5 @@
 {
   "type": "aura_gen:projectile_gen",
   "projectile": "minecraft:shulker_bullet",
-  "aura": 300000
+  "aura_gain": 300000
 }

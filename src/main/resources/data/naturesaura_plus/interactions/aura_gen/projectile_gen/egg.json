@@ -1,5 +1,5 @@
 {
   "type": "aura_gen:projectile_gen",
   "projectile": "minecraft:egg",
-  "aura": 10000
+  "aura_gain": 10000
 }

@@ -1,5 +1,5 @@
 {
 "type": "aura_gen:projectile_gen",
 "projectile": "minecraft:small_fireball",
-"aura": 35000
+"aura_gain": 35000
 }

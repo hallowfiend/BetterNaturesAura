@@ -1,5 +1,5 @@
 {
 "type": "aura_gen:projectile_gen",
 "projectile": "minecraft:ender_pearl",
-"aura": 50000
+"aura_gain": 50000
 }

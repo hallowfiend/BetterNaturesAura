@@ -1,5 +1,5 @@
 {
   "type": "aura_gen:projectile_gen",
   "projectile": "minecraft:arrow",
-  "aura": 30000
+  "aura_gain": 30000
 }

@@ -1,5 +1,5 @@
 {
   "type": "aura_gen:projectile_gen",
   "projectile": "minecraft:trident",
-  "aura": 3000000
+  "aura_gain": 3000000
 }
