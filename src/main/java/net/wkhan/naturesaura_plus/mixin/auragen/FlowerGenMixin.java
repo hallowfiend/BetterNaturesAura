@@ -9,10 +9,7 @@ import de.ellpeck.naturesaura.packet.PacketHandler;
 import de.ellpeck.naturesaura.packet.PacketParticleStream;
 import de.ellpeck.naturesaura.packet.PacketParticles;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -41,7 +38,7 @@ public class FlowerGenMixin extends BlockEntityImpl {
         super(type, pos, state);
     }
 
-    @Unique private int naturesaura_plus$vitality = 100;
+    @Unique private byte naturesaura_plus$vitality = 100;
 
     @Unique private final circularBuffer<Block> naturesaura_plus$flowerMemory = new circularBuffer<>(flowerGenMemorySize) {};
 
@@ -82,8 +79,8 @@ public class FlowerGenMixin extends BlockEntityImpl {
         this.setChanged();
         int repeatFlower = naturesaura_plus$flowerMemory.countObject(flower) - 1;
         AuraGenRules.flowerValues stats = FLOWER_GENERATIONS.get(flower);
-        int lucidity = stats.lucidity();
-        double auraFactor = (1 - Math.pow(((double) (100 - this.naturesaura_plus$vitality)/flowerGenVitalityFloor),flowerGenPowFactor));
+        byte lucidity = stats.lucidity();
+        double auraFactor = (1 - Math.pow(((double) (100 - this.naturesaura_plus$vitality)/flowerGenVitalityFloor),flowerGenPowFactor)); //make float
         System.out.println("Before toAdd: " + auraFactor);
         System.out.println(stats + "\n Repeat Flower:" + repeatFlower + "\n Vitality:" + naturesaura_plus$vitality);
         int auraAmount = (int) (stats.auraAmount() * auraFactor);
@@ -91,14 +88,14 @@ public class FlowerGenMixin extends BlockEntityImpl {
 
         if (lucidity != 0 && repeatFlower == 0) {
             System.out.println("Before Increase " + this.naturesaura_plus$vitality);
-            if (this.naturesaura_plus$vitality != 100) this.naturesaura_plus$vitality = Math.min(this.naturesaura_plus$vitality + lucidity,100);
+            if (this.naturesaura_plus$vitality != 100) this.naturesaura_plus$vitality = (byte) Math.min(this.naturesaura_plus$vitality + lucidity,100);
             System.out.println("After Increase " + this.naturesaura_plus$vitality);
 
         }
         else if (this.naturesaura_plus$vitality != 0) {
             System.out.println("Before Decrease " + this.naturesaura_plus$vitality);
-            int obscurity = (int) (stats.obscurity() * Math.pow(stats.obscurityScale(),repeatFlower));
-            this.naturesaura_plus$vitality = Math.max(this.naturesaura_plus$vitality - obscurity, 0);
+            byte obscurity = (byte) (stats.obscurity() * Math.pow(stats.obscurityScale(),repeatFlower));
+            this.naturesaura_plus$vitality = (byte) Math.max(this.naturesaura_plus$vitality - obscurity, 0);
             System.out.println("After Decrease " + this.naturesaura_plus$vitality);
         }
 
@@ -135,7 +132,7 @@ public class FlowerGenMixin extends BlockEntityImpl {
         ci.cancel();
         super.writeNBT(compound, type);
         if (type == SaveType.SYNC) return;
-        IntTag vitality = IntTag.valueOf(naturesaura_plus$vitality);
+        ByteTag vitality = ByteTag.valueOf(naturesaura_plus$vitality);
         compound.put("vitality", vitality);
         if (naturesaura_plus$flowerMemory.isEmpty()) return;
         ListTag flowerMemoryList = new ListTag();
@@ -166,7 +163,7 @@ public class FlowerGenMixin extends BlockEntityImpl {
         ci.cancel();
         super.readNBT(compound, type);
         if (type == SaveType.SYNC) return;
-        naturesaura_plus$vitality = compound.getInt("vitality");
+        naturesaura_plus$vitality = compound.getByte("vitality");
         for(Tag t : compound.getList("flower_memory", 10)) {
             CompoundTag tag = (CompoundTag)t;
             Block flower = ForgeRegistries.BLOCKS.getValue(ResourceLocation.parse(tag.getString("block")));

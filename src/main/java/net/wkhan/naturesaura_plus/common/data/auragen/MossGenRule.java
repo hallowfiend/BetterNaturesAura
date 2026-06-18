@@ -1,108 +1,43 @@
 package net.wkhan.naturesaura_plus.common.data.auragen;
 
-import com.google.gson.annotations.SerializedName;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.wkhan.naturesaura_plus.NaturesAuraPlusUtils;
 
-public class MossGenRule {
+public record MossGenRule(
+        Either<Block, TagKey<Block>> blockInputId,
+        Block blockOutputId,
+        int auraAmount
+) {
 
-    @SerializedName("block_to_convert")
-    private String blockInputId;
+    public static final Codec<MossGenRule> CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                    NaturesAuraPlusUtils.elementOrTagCodec(ForgeRegistries.BLOCKS, Registries.BLOCK)
+                            .fieldOf("block_to_convert").forGetter(MossGenRule::blockInputId),
+                    ForgeRegistries.BLOCKS.getCodec().fieldOf("block_result").forGetter(MossGenRule::blockOutputId),
+                    Codec.INT.fieldOf("aura_gain").forGetter(MossGenRule::auraAmount)
+            ).apply(instance, MossGenRule::new)
+    );
 
-    @SerializedName("block_result")
-    private String blockResultId;
-
-    @SerializedName("aura_gain")
-    private int auraAmount;
-
-    private transient Block cachedBlockInput;
-    private transient TagKey<Block> cachedBlockInputTag;
-    private transient Block cachedBlockResult;
-    private transient boolean rulesResolved = false;
-    private transient String sourceFile;
-
-    public void setSourceFile(String sourceFile) {
-        this.sourceFile = sourceFile;
+    public boolean isTag() {
+        return this.blockInputId.right().isPresent();
     }
-
-    public boolean resolve() {
-        if (rulesResolved) return true;
-
-        if (!blockInputResolve()) {
-            logError("Failed to resolve Block (Input Conversion By MossGen) ID: '" + blockInputId + "'");
-            return false;
-        }
-        if (!blockResultResolve()) {
-            logError("Failed to resolve Block (Result Conversion By MossGen) ID: '" + blockResultId + "'");
-            return false;
-        }
-
-        this.rulesResolved = true;
-        return true;
-    }
-
-    private boolean blockInputResolve(){
-        if (blockInputId == null || blockInputId.isEmpty()) {
-            System.err.println("MossGen Rule Error: Missing Block (Input Conversion By MossGen) ID'" + blockInputId + "'");
-            return false;
-        }
-        if (blockInputId.startsWith("#")) {
-            String tagId = blockInputId.substring(1);
-            this.cachedBlockInputTag = TagKey.create(Registries.BLOCK, ResourceLocation.tryParse(tagId));
-            return true;
-        }
-        ResourceLocation loc = ResourceLocation.tryParse(blockInputId);
-        if (loc != null && ForgeRegistries.BLOCKS.containsKey(loc)) {
-            this.cachedBlockInput = ForgeRegistries.BLOCKS.getValue(loc);
-            return true;
-        } else {
-            System.err.println("MossGen Rule Error: Invalid Block (Input Conversion By MossGen) ID '" + blockInputId + "'");
-            return false;
-        }
-    }
-
-    private boolean blockResultResolve(){
-        if (blockResultId == null || blockResultId.isEmpty()) {
-            System.err.println("MossGen Rule Error: Missing (Result Conversion By MossGen) ID'" + blockResultId + "'");
-            return false;
-        }
-        if (blockResultId.startsWith("#")) {
-            System.err.println("MossGen Rule Error: Tags must not be used in result field -> '" + blockResultId + "'");
-            return false;
-        }
-        ResourceLocation loc = ResourceLocation.tryParse(blockResultId);
-        if (loc != null && ForgeRegistries.BLOCKS.containsKey(loc)) {
-            this.cachedBlockResult = ForgeRegistries.BLOCKS.getValue(loc);
-            return true;
-        } else {
-            System.err.println("MossGen Rule Error: (Result Conversion By MossGen) ID'" + blockInputId + "'");
-            return false;
-        }
-    }
-
-
-    private void logError(String message) {
-        if (sourceFile != null) {
-            System.err.println("MossGen Rule Error in " + sourceFile + ": " + message);
-        } else {
-            System.err.println("MossGen Rule Error: (Invalid SourceFile? <- Seen when sourceFile resolves to null) " + message);
-        }
-    }
-
 
     public Block getBlockInput() {
-        return this.cachedBlockInput;
+        return this.blockInputId.left().orElse(null);
     }
-    public Block getBlockResult() {
-        return this.cachedBlockResult;
-    }
+
     public TagKey<Block> getBlockInputTag() {
-        return this.cachedBlockInputTag;
+        return this.blockInputId.right().orElse(null);
     }
-    public int getAuraAmount() {
-        return auraAmount;
+
+    public Block getBlockOutput() {
+        return this.blockOutputId;
     }
+
 }

@@ -1,6 +1,12 @@
 package net.wkhan.naturesaura_plus;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -8,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -168,5 +175,23 @@ public class NaturesAuraPlusUtils {
         public int getCapacity(){
             return capacity;
         }
+    }
+
+    public static <T> Codec<Either<T, TagKey<T>>> elementOrTagCodec(IForgeRegistry<T> forgeRegistry, ResourceKey<Registry<T>> registryKey) {
+        return Codec.STRING.comapFlatMap(str -> {
+                    if (str.startsWith("#")) {
+                        ResourceLocation tagId = ResourceLocation.tryParse(str.substring(1));
+                        if (tagId != null) return DataResult.success(Either.right(TagKey.create(registryKey, tagId)));
+                        return DataResult.error(() -> "Invalid Tag: '" + str + "'");
+                    }
+                    ResourceLocation elementId = ResourceLocation.tryParse(str);
+                    if (elementId != null && forgeRegistry.containsKey(elementId)) return DataResult.success(Either.left(forgeRegistry.getValue(elementId)));
+                    return DataResult.error(() -> "Unknown Registry ID: '" + str + "'");
+                },
+                either -> either.map(
+                        element -> forgeRegistry.getKey(element).toString(),
+                        tag -> "#" + tag.location()
+                )
+        );
     }
 }

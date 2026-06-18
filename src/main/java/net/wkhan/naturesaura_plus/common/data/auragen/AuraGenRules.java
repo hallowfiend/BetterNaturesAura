@@ -14,44 +14,48 @@ public final class AuraGenRules {
     public record deMossedBlockAuraAmountPair(Block deMossedBlock, int auraAmount) {}
     public static final Map<Block, deMossedBlockAuraAmountPair> MOSS_GENERATIONS = new HashMap<>();
 
-    public record flowerValues(int auraAmount, int lucidity, int obscurity, int obscurityScale) {}
+    public record flowerValues(int auraAmount, byte lucidity, byte obscurity, float obscurityScale) {}
     public static final Map<Block, flowerValues> FLOWER_GENERATIONS = new HashMap<>();
 
-    public static void projectileGenerationClear() {
+    public static HashMap<String, Integer> auraRulesCount() {
+        HashMap<String, Integer> rulesCount = new HashMap<>();
+        rulesCount.put("Projectile Generations", NaturesAuraAPI.PROJECTILE_GENERATIONS.size());
+        rulesCount.put("Moss Generations", MOSS_GENERATIONS.size());
+        rulesCount.put("Flower Generations", FLOWER_GENERATIONS.size());
+        return rulesCount;
+    }
+
+    public static void auraGenerationClear() {
         NaturesAuraAPI.PROJECTILE_GENERATIONS.clear();
+        MOSS_GENERATIONS.clear();
+        FLOWER_GENERATIONS.clear();
     }
 
     public static void addProjectileGeneration(ProjectileGenRule rule) {
-        if (!rule.resolve()) return;
+//        if (!rule.resolve()) return;
 
-        int auraAmount = rule.getAuraAmount();
-        EntityType<?> projectileEntityType = rule.getProjectileEntity();
+        int auraAmount = rule.auraAmount();
+        EntityType<?> projectile = rule.getProjectile();
 
-        if (projectileEntityType != null) {
-                NaturesAuraAPI.PROJECTILE_GENERATIONS.put(projectileEntityType, auraAmount);
+
+        if (projectile != null) {
+                NaturesAuraAPI.PROJECTILE_GENERATIONS.put(projectile, auraAmount);
                 return;
         }
 
-        TagKey<EntityType<?>> projectileEntityTypeTag = rule.getProjectileEntityTag();
-        if (projectileEntityTypeTag != null) {
+        TagKey<EntityType<?>> projectileTag = rule.getProjectileTag();
+        if (projectileTag != null) {
                 ForgeRegistries.ENTITY_TYPES.getValues().stream()
-                        .filter(e -> e.is(projectileEntityTypeTag))
+                        .filter(e -> e.is(projectileTag))
                         .forEach(e -> NaturesAuraAPI.PROJECTILE_GENERATIONS.put(e, auraAmount));
         }
-    }
-
-
-    public static void mossGenerationClear() {
-        MOSS_GENERATIONS.clear();
-    }
+    } //refactored
 
     public static void addMossGeneration(MossGenRule rule) {
-        if (!rule.resolve()) return;
-
-        int auraAmount = rule.getAuraAmount();
+        int auraAmount = rule.auraAmount();
         Block mossBlock = rule.getBlockInput();
         TagKey<Block> mossBlockTag = rule.getBlockInputTag();
-        Block deMossedBlock = rule.getBlockResult();
+        Block deMossedBlock = rule.getBlockOutput();
 
         if (mossBlock != null) {
             MOSS_GENERATIONS.put(mossBlock, new deMossedBlockAuraAmountPair(deMossedBlock, auraAmount));
@@ -63,21 +67,14 @@ public final class AuraGenRules {
                 .forEach(b -> MOSS_GENERATIONS.put(b, new deMossedBlockAuraAmountPair(deMossedBlock, auraAmount)));
     }
 
-    
-    public static void flowerGenerationClear() {
-        FLOWER_GENERATIONS.clear();
-    }
-
     public static void addFlowerGeneration(FlowerGenRule rule) {
-        if (!rule.resolve()) return;
-
         Block flowerBlock = rule.getBlockInput();
         TagKey<Block> flowerBlockTag = rule.getBlockInputTag();
         if (flowerBlock == null & flowerBlockTag == null) return;
-        int auraAmount = rule.getAuraAmount();
-        int lucidity = rule.getLucidity();
-        int obscurity = rule.getObscurity();
-        int obscurityScale = rule.getObscurityScale();
+        int auraAmount = rule.auraAmount();
+        byte lucidity = rule.lucidity();
+        byte obscurity = rule.obscurity();
+        float obscurityScale = rule.obscurityScale();
 
         if(flowerBlock != null) {
             FLOWER_GENERATIONS.put(flowerBlock, new flowerValues(auraAmount, lucidity, obscurity, obscurityScale));
@@ -87,6 +84,6 @@ public final class AuraGenRules {
         ForgeRegistries.BLOCKS.getValues().stream()
                 .filter(b -> b.defaultBlockState().is(flowerBlockTag))
                 .forEach(b -> FLOWER_GENERATIONS.put(b, new flowerValues(auraAmount, lucidity, obscurity, obscurityScale)));
-    }
+    } //refactored
 }
 
