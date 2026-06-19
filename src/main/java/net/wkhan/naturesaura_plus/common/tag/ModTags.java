@@ -1,9 +1,9 @@
 package net.wkhan.naturesaura_plus.common.tag;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.wkhan.naturesaura_plus.NaturesAuraPlus;
@@ -13,7 +13,7 @@ public class ModTags {
         public static final TagKey<Item> CANNOT_APPLY_BREAK_PREVENTION = tag("cannot_apply_break_prevention");
 
         private static TagKey<Item> tag(String name) {
-            return ItemTags.create(ResourceLocation.fromNamespaceAndPath(NaturesAuraPlus.MODID, name));
+            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(NaturesAuraPlus.MODID, name));
         }
     }
 
@@ -26,7 +26,15 @@ public class ModTags {
         public static final TagKey<Block> LOOT_FINDER_TREASURE_CHEST = tag("loot_finder_treasure_chest");
 
         private static TagKey<Block> tag(String name) {
-            return BlockTags.create(ResourceLocation.fromNamespaceAndPath(NaturesAuraPlus.MODID, name));
+            return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(NaturesAuraPlus.MODID, name));
+        }
+    }
+
+    public static class Entities {
+        public static final TagKey<EntityType<?>> ANIMAL = tag("animal");
+
+        private static TagKey<EntityType<?>> tag(String name) {
+            return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(NaturesAuraPlus.MODID, name));
         }
     }
 }
