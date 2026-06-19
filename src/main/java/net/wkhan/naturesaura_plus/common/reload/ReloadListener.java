@@ -109,6 +109,15 @@ public class ReloadListener
                                     AuraGenRules.addSlimeGeneration(rule);
                                 });
                     }
+                    case "aura_gen:animal_gen" -> {
+                        DataResult<AnimalGenRule> result = AnimalGenRule.CODEC.parse(JsonOps.INSTANCE, json)
+                                .mapError(originalError -> "Error in file '" + fileId + "': " + originalError);
+                        result.resultOrPartial(errorMessage -> System.err.println("AnimalGen JSON Error: " + errorMessage))
+                                .ifPresent(rule -> {
+                                    loadedAuraRules.add(fileId.toString());
+                                    AuraGenRules.addAnimalGeneration(rule);
+                                });
+                    }
 
                     default -> System.err.println("Unknown rule type '" + type + "' in file: " + fileId);
                 }

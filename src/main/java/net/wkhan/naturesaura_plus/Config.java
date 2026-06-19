@@ -32,6 +32,10 @@ public class Config
             .comment("Cooldown set on loot finder item upon use, in ticks. (Default: 1,200)")
             .defineInRange("lootFinderUseCooldownInTicks", 1200, 0, 72000);
 
+    private static final ForgeConfigSpec.IntValue LOOT_FINDER_LIGHT_LIFE = BUILDER
+            .comment("How long the loot finder particles stay, in ticks. (Default: 1,200)")
+            .defineInRange("lootFinderLightLifeInTicks", 1200, 0, 72000);
+
     private static final ForgeConfigSpec.IntValue FLOWER_GEN_RANGE = BUILDER
             .comment("Horizontal range in blocks of the flower generator. (Default: 3) \n(Note, does not affect vertical range)")
             .defineInRange("flowerGenRange", 3, 1, 10);
@@ -41,7 +45,7 @@ public class Config
             .comment("Number of flowers the flower aura generator block remembers when calculating aura generated amount. (Default: 3)")
             .defineInRange("flowerGenMemorySize", 3, 0, 1000);
 
-    private static final ForgeConfigSpec.IntValue FLOWER_GEN_VITALITY_FLOOR = BUILDER
+    private static final ForgeConfigSpec.IntValue FLOWER_GEN_VITALITY_FLOOR = BUILDER //clarify
             .comment("Essentially the lowest value of vitality upto which the flower generator generates aura. (Default: 100) \n(Note, beyond 100, the flower generator will generate aura at even 0 vitality, which is its hard floor cap. Check the formula on the wiki for more details.)")
             .defineInRange("flowerGenVitalityFloor", 100, 0, 1000);
 
@@ -51,13 +55,16 @@ public class Config
 
     //Make range config for moss gen
     private static final ForgeConfigSpec.IntValue MOSS_GEN_RANGE = BUILDER
-            .comment("Horizontal range in blocks of the moss generator. (Default: 3) \n(Note, does not affect vertical range)")
+            .comment("Horizontal range in blocks of the moss generator. (Default: 2) \n(Note, does not affect vertical range)")
             .defineInRange("mossGenRange", 2, 1, 10);
 
     private static final ForgeConfigSpec.IntValue MOSS_GEN_MEMORY_SIZE = BUILDER
             .comment("Number of mosses the moss aura generator block remembers when determining if moss block is recent (Hence skipping if recent). (Default: 3)")
             .defineInRange("mossGenMemorySize", 3, 0, 1000);
 
+    private static final ForgeConfigSpec.IntValue ANIMAL_GEN_RANGE = BUILDER
+            .comment("Cubical size radius (half-length) for range of the animal generator in blocks. (Default: 5)")
+            .defineInRange("animalGenRange", 5, 1, 10);
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
@@ -66,12 +73,14 @@ public class Config
     public static int lootFinderAuraCost;
     public static int lootFinderRange;
     public static int lootFinderUseCooldownInTicks;
+    public static int lootFinderLightLifeInTicks;
     public static int flowerGenRange;
     public static int flowerGenMemorySize;
     public static int flowerGenVitalityFloor;
     public static double flowerGenPowFactor;
     public static int mossGenRange;
     public static int mossGenMemorySize;
+    public static int animalGenRange;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -80,11 +89,13 @@ public class Config
         lootFinderAuraCost = LOOT_FINDER_AURA_COST.get();
         lootFinderRange = LOOT_FINDER_RANGE.get();
         lootFinderUseCooldownInTicks = LOOT_FINDER_USE_COOLDOWN.get();
+        lootFinderLightLifeInTicks = LOOT_FINDER_LIGHT_LIFE.get();
         flowerGenRange = FLOWER_GEN_RANGE.get();
         flowerGenMemorySize = FLOWER_GEN_MEMORY_SIZE.get();
         flowerGenVitalityFloor = FLOWER_GEN_VITALITY_FLOOR.get();
         flowerGenPowFactor = FLOWER_GEN_POW_FACTOR.get();
         mossGenRange = MOSS_GEN_RANGE.get();
         mossGenMemorySize = MOSS_GEN_MEMORY_SIZE.get();
+        animalGenRange = ANIMAL_GEN_RANGE.get();
     }
 }
