@@ -40,8 +40,8 @@ public class ItemAuraManaHolder extends Item{
         MinecraftForge.EVENT_BUS.register(new ItemAuraManaHolderEventListener());
     }
 
-    private static final int MAX_AURA = 400000; //make config
-    private static final int MAX_MANA = 500000; //make config
+    private static final int MAX_AURA = 1200000; //make config
+    private static final int MAX_MANA = 2000000; //make config
     private static final String MANA_TAG = "mana";
     private static final String AURA_TAG = "aura";
     private static final String CREATIVE_TAG = "creative";
