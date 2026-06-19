@@ -42,7 +42,7 @@ public abstract class ItemLootFinderMixin extends ItemImpl {
         ItemStack stack = playerIn.getItemInHand(handIn);
         NaturesAuraAPI.IInternalHooks inst = NaturesAuraAPI.instance();
         if (!inst.extractAuraFromPlayer(playerIn, lootFinderAuraCost, false)) {
-            cir.setReturnValue(new InteractionResultHolder(InteractionResult.FAIL, stack));
+            cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.FAIL, stack));
             return;
         }
         if (!levelIn.isClientSide) return;
@@ -54,7 +54,7 @@ public abstract class ItemLootFinderMixin extends ItemImpl {
             if (tile.getBlockState().is(LOOT_FINDER_TREASURE_CHEST)) {
                 inst.spawnMagicParticle((float) tile.getBlockPos().getX() + 0.5F, (float) tile.getBlockPos().getY() + 0.5F,
                         (float) tile.getBlockPos().getZ() + 0.5F, 0.0F, 0.0F, 0.0F,
-                        16761095, 6.0F, lootFinderUseCooldownInTicks, 0.0F, false, true);
+                        16761095, 6.0F, lootFinderLightLifeInTicks, 0.0F, false, true);
             }
             return false;
         });
@@ -63,15 +63,15 @@ public abstract class ItemLootFinderMixin extends ItemImpl {
         foundBlocks.forEach(pos ->
                 inst.spawnMagicParticle((float) pos.getX() + 0.5F, (float) pos.getY() + 0.5F,
                         (float) pos.getZ() + 0.5F, 0.0F, 0.0F, 0.0F,
-                        12434877, 6.0F, lootFinderUseCooldownInTicks, 0.0F, false, true)
+                        12434877, 6.0F, lootFinderLightLifeInTicks, 0.0F, false, true)
                 );
 
         inst.setParticleDepth(true);
-        inst.setParticleSpawnRange(32); //I have no idea what this is used for, the default value is 32, so I left it as is.
+        inst.setParticleSpawnRange(32);
         inst.setParticleCulling(true);
         playerIn.swing(handIn);
 
         playerIn.getCooldowns().addCooldown(this, lootFinderUseCooldownInTicks);
-        cir.setReturnValue(new InteractionResultHolder(InteractionResult.SUCCESS, stack));
+        cir.setReturnValue(new InteractionResultHolder<>(InteractionResult.SUCCESS, stack));
     }
 }
