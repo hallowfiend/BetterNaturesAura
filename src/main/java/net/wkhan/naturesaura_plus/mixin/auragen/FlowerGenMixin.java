@@ -33,7 +33,7 @@ import static net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules.FLOWER
 import static net.wkhan.naturesaura_plus.NaturesAuraPlusUtils.circularBuffer;
 
 @Mixin(BlockEntityFlowerGenerator.class)
-public class FlowerGenMixin extends BlockEntityImpl {
+public abstract class FlowerGenMixin extends BlockEntityImpl {
     public FlowerGenMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
@@ -81,22 +81,15 @@ public class FlowerGenMixin extends BlockEntityImpl {
         AuraGenRules.flowerValues stats = FLOWER_GENERATIONS.get(flower);
         byte lucidity = stats.lucidity();
         double auraFactor = (1 - Math.pow(((double) (100 - this.naturesaura_plus$vitality)/flowerGenVitalityFloor),flowerGenPowFactor)); //make float
-        System.out.println("Before toAdd: " + auraFactor);
-        System.out.println(stats + "\n Repeat Flower:" + repeatFlower + "\n Vitality:" + naturesaura_plus$vitality);
         int auraAmount = (int) (stats.auraAmount() * auraFactor);
         int toAdd = Math.max(0, auraAmount);
 
         if (lucidity != 0 && repeatFlower == 0) {
-            System.out.println("Before Increase " + this.naturesaura_plus$vitality);
             if (this.naturesaura_plus$vitality != 100) this.naturesaura_plus$vitality = (byte) Math.min(this.naturesaura_plus$vitality + lucidity,100);
-            System.out.println("After Increase " + this.naturesaura_plus$vitality);
-
         }
         else if (this.naturesaura_plus$vitality != 0) {
-            System.out.println("Before Decrease " + this.naturesaura_plus$vitality);
             byte obscurity = (byte) (stats.obscurity() * Math.pow(stats.obscurityScale(),repeatFlower));
             this.naturesaura_plus$vitality = (byte) Math.max(this.naturesaura_plus$vitality - obscurity, 0);
-            System.out.println("After Decrease " + this.naturesaura_plus$vitality);
         }
 
         //this.sendToClients(); // Not implemented, idk how this works yet

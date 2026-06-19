@@ -69,29 +69,20 @@ public class ItemRecallCoffee extends Item {
     }
 
     public static ServerLevelVec3SpawnAnglePack simulateRespawnCheck(Player player) {
-        if (!(player instanceof ServerPlayer serverPlayer)) {
-            System.out.println("He failed his job.");
-            return null;
-        }
-        System.out.println("He passed.");
+        if (!(player instanceof ServerPlayer serverPlayer)) return null;
         BlockPos respawnPos = serverPlayer.getRespawnPosition();
         float respawnAngle = serverPlayer.getRespawnAngle();
         boolean isSpawnForced = serverPlayer.isRespawnForced();
         ServerLevel defaultDimension = serverPlayer.getServer().overworld();
         ServerLevel targetDimension = serverPlayer.server.getLevel(serverPlayer.getRespawnDimension());
 
-        if (respawnPos == null || targetDimension == null) {
-            System.out.println("No anchor found. Fallback to world spawn coordinate");
-            return new ServerLevelVec3SpawnAnglePack(defaultDimension,Vec3.atBottomCenterOf(defaultDimension.getSharedSpawnPos()),respawnAngle);
-        }
+        if (respawnPos == null || targetDimension == null) return new ServerLevelVec3SpawnAnglePack
+                (defaultDimension,Vec3.atBottomCenterOf(defaultDimension.getSharedSpawnPos()),respawnAngle);
 
-        Optional<Vec3> actualSpawnPoint = Player.findRespawnPositionAndUseSpawnBlock(targetDimension, respawnPos, respawnAngle, isSpawnForced, true);
-
-        if (actualSpawnPoint.isPresent()) {
-            System.out.println("Valid respawn point detected at: " + actualSpawnPoint.get());
-            return new ServerLevelVec3SpawnAnglePack(targetDimension,actualSpawnPoint.get(),respawnAngle);
-        }
-        System.out.println("Respawn point was obstructed or missing! Falling back to World Spawn.");
-        return new ServerLevelVec3SpawnAnglePack(defaultDimension,Vec3.atBottomCenterOf(defaultDimension.getSharedSpawnPos()),respawnAngle);
+        Optional<Vec3> actualSpawnPoint = Player.findRespawnPositionAndUseSpawnBlock
+                (targetDimension, respawnPos, respawnAngle, isSpawnForced, true);
+        return actualSpawnPoint.map(vec3 -> new ServerLevelVec3SpawnAnglePack(targetDimension, vec3, respawnAngle))
+                .orElseGet(() -> new ServerLevelVec3SpawnAnglePack
+                        (defaultDimension, Vec3.atBottomCenterOf(defaultDimension.getSharedSpawnPos()), respawnAngle));
     }
 }
