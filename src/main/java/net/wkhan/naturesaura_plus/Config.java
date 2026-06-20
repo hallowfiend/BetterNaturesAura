@@ -43,7 +43,7 @@ public class Config
 
     private static final ForgeConfigSpec.IntValue FLOWER_GEN_MEMORY_SIZE = BUILDER
             .comment("Number of flowers the flower aura generator block remembers when calculating aura generated amount. (Default: 3)")
-            .defineInRange("flowerGenMemorySize", 3, 0, 1000);
+            .defineInRange("flowerGenMemorySize", 3, 1, 1000);
 
     private static final ForgeConfigSpec.IntValue FLOWER_GEN_VITALITY_FLOOR = BUILDER //clarify
             .comment("Essentially the lowest value of vitality upto which the flower generator generates aura. (Default: 100) \n(Note, beyond 100, the flower generator will generate aura at even 0 vitality, which is its hard floor cap. Check the formula on the wiki for more details.)")
@@ -60,7 +60,7 @@ public class Config
 
     private static final ForgeConfigSpec.IntValue MOSS_GEN_MEMORY_SIZE = BUILDER
             .comment("Number of mosses the moss aura generator block remembers when determining if moss block is recent (Hence skipping if recent). (Default: 3)")
-            .defineInRange("mossGenMemorySize", 3, 0, 1000);
+            .defineInRange("mossGenMemorySize", 3, 1, 1000);
 
     private static final ForgeConfigSpec.IntValue ANIMAL_GEN_RANGE = BUILDER
             .comment("Cubical size radius (half-length) for range of the animal generator in blocks. (Default: 5)")
