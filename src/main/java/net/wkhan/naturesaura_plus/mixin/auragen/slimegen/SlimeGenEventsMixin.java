@@ -30,6 +30,7 @@ public abstract class SlimeGenEventsMixin {
         AuraGenRules.slimeValues slimeValues = SLIME_GENERATIONS.get(entity.getType());
         if (slimeValues == null) return;
         if (entity.level().isClientSide()) return;
+        if (entity.getPersistentData().getBoolean("naturesaura:pet_reviver")) return;
         if (entity instanceof Slime slime && slime.getSize() < slimeValues.minSizeForSlime()) return;
         Helper.getBlockEntitiesInArea(entity.level(), entity.blockPosition(), slimeGenRange, (tile) -> {
             if (!(tile instanceof BlockEntitySlimeSplitGenerator gen)) return false;

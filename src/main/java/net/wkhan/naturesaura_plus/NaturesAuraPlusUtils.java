@@ -112,18 +112,20 @@ public class NaturesAuraPlusUtils {
 
     public static class circularBuffer<T> {
         private final int capacity;
-        private final Object[] buffer;
+        private Object[] buffer;
         private int head = 0;
         private int tail = 0;
         private int count = 0;
 
         public circularBuffer(int capacity) {
+            if (capacity < 1) throw new IllegalArgumentException("Capacity must be at least 1");
             this.capacity = capacity;
             this.buffer = new Object[capacity];
         }
 
         public T readObject() {
             T oldestBlock = (T) buffer[head];
+            buffer[head] = null; //not thought of well yet
             head = (head + 1) % capacity;
             count -= 1;
             return oldestBlock;
@@ -131,9 +133,7 @@ public class NaturesAuraPlusUtils {
 
         public void writeObject(T object) {
             buffer[tail] = object;
-            if (count == capacity) {
-                head = tail;
-            }
+            if (count == capacity)  head = (head + 1) % capacity;
             else count++;
             tail = (tail + 1) % capacity;
         }
@@ -161,7 +161,7 @@ public class NaturesAuraPlusUtils {
             head = 0;
             tail = 0;
             count = 0;
-            //buffer = new Object[capacity];
+            buffer = new Object[capacity];
         }
         
         public int getHead() {

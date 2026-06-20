@@ -63,6 +63,7 @@ public class AnimalGenMixin extends BlockContainerImpl {
         if(entity.level().isClientSide()) return;
         EntityType<?> entityType = entity.getType();
         if(!ANIMAL_GENERATIONS.containsKey(entityType)) return;
+        if (entity.getPersistentData().getBoolean("naturesaura:pet_reviver")) return;
         AuraGenRules.animalValues animalValues = ANIMAL_GENERATIONS.get(entityType);
         BlockPos pos = entity.blockPosition();
         Helper.getBlockEntitiesInArea(entity.level(), pos, animalGenRange, (tile) -> {
