@@ -175,6 +175,15 @@ public class NaturesAuraPlusUtils {
         public int getCapacity(){
             return capacity;
         }
+
+        public int getRepeatAfterSimulatedPush(T objectToBeInserted, int countAllowed) {
+            int currentRepeat = this.countObject(objectToBeInserted) - countAllowed;
+            if (currentRepeat < 0) return 0;
+            if (count < capacity) return currentRepeat + 1;
+            boolean overwritingTarget = Objects.equals(buffer[head], objectToBeInserted);
+            if (overwritingTarget) return currentRepeat;
+            return currentRepeat + 1;
+        }
     }
 
     public static <T> Codec<Either<T, TagKey<T>>> elementOrTagCodec(IForgeRegistry<T> forgeRegistry, ResourceKey<Registry<T>> registryKey) {

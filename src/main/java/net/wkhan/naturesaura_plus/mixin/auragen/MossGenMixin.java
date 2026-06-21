@@ -59,12 +59,13 @@ public abstract class MossGenMixin extends BlockEntityImpl {
                     BlockPos offset = this.worldPosition.offset(x, y, z);
                     boolean isRecent = data.recentlyConvertedMossStones.contains(offset);
                     Block block = this.level.getBlockState(offset).getBlock();
-                    if (naturesaura_plus$mossMemory.countObject(block) != 0) continue; //Maybe make this != 0 check data driven too
+                    if (!(MOSS_GENERATIONS.containsKey(block))) continue;
+                    if (naturesaura_plus$mossMemory.getRepeatAfterSimulatedPush(block,1) > 0) continue; //Maybe make this repeat check data driven too
                     if (isRecent) {
                         data.recentlyConvertedMossStones.remove(offset);
                         continue;
                     }
-                    if (MOSS_GENERATIONS.containsKey(block)) possibleOffsets.add(offset);
+                    possibleOffsets.add(offset);
                 }
             }
         }
@@ -82,7 +83,9 @@ public abstract class MossGenMixin extends BlockEntityImpl {
         if (!this.canGenerateRightNow(auraAmount)) return;
 
         this.generateAura(auraAmount);
-        PacketHandler.sendToAllAround(this.level, this.worldPosition, 32, new PacketParticles((float)offset.getX(), (float)offset.getY(), (float)offset.getZ(), PacketParticles.Type.MOSS_GENERATOR));
+        PacketHandler.sendToAllAround(this.level, this.worldPosition, 32, new PacketParticles(
+                (float)offset.getX(), (float)offset.getY(), (float)offset.getZ(), PacketParticles.Type.MOSS_GENERATOR)
+        );
 
         this.level.levelEvent(2001, offset, Block.getId(state));
         this.level.setBlockAndUpdate(offset, result.defaultBlockState());
