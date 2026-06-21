@@ -137,7 +137,10 @@ public class ItemBreakPreventionAll extends Item {
             ItemStack stack = event.getItemStack();
             if (!isTokenApplied(stack)) return;
             List<Component> tooltip = event.getToolTip();
-            tooltip.add(Component.translatable("info.naturesaura_plus.break_prevention_token").setStyle(Style.EMPTY.applyFormat(ChatFormatting.GRAY)));
+            tooltip.add(Component.translatable(
+                    "info.naturesaura_plus.break_prevention_token")
+                    .setStyle(Style.EMPTY.applyFormat(ChatFormatting.GRAY))
+            );
             Component head = tooltip.get(0);
             if (head instanceof MutableComponent) {
                 if (!isTokenAppliedBroken(stack)) return;

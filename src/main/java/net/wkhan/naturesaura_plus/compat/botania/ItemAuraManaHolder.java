@@ -6,8 +6,11 @@ import de.ellpeck.naturesaura.api.aura.container.IAuraContainer;
 import de.ellpeck.naturesaura.api.aura.item.IAuraRecharge;
 import de.ellpeck.naturesaura.api.aura.type.IAuraType;
 import de.ellpeck.naturesaura.enchant.ModEnchantments;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -16,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -32,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 import vazkii.botania.api.mana.ManaItem;
 
+import java.util.List;
 import java.util.Optional;
 
 public class ItemAuraManaHolder extends Item{
@@ -232,6 +237,14 @@ public class ItemAuraManaHolder extends Item{
     }
 
     @Override
+    public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> toolTip, TooltipFlag p_41424_) {
+        toolTip.add(Component.translatable(
+             "info.naturesaura_plus.aura_mana_holder")
+             .setStyle(Style.EMPTY.withItalic(true).applyFormat(ChatFormatting.GRAY))
+        );
+    }
+
+    @Override
     public boolean isBarVisible(ItemStack stack) {
         return !isCreativeStack(stack);
     }
@@ -303,5 +316,7 @@ public class ItemAuraManaHolder extends Item{
             }
             tag.putString(DISPLAY_MODE_TAG, AURA_TAG);
         }
+
+//        @SubscribeEvent
     }
 }
