@@ -24,6 +24,9 @@ public class ModTags {
         public static final TagKey<Block> HOPPER_UPGRADE_AFFECTED = tag("hopper_upgrade_affected");
         public static final TagKey<Block> LOOT_FINDER_TREASURE = tag("loot_finder_treasure");
         public static final TagKey<Block> LOOT_FINDER_TREASURE_CHEST = tag("loot_finder_treasure_chest");
+        public static final TagKey<Block> TOWERING_PLANT_SOIL = tag("towering_plant_soil");
+        public static final TagKey<Block> TOWERING_PLANT_STEM = tag("towering_plant_stem");
+        public static final TagKey<Block> TOWERING_PLANT_CAP = tag("towering_plant_cap");
 
         private static TagKey<Block> tag(String name) {
             return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(NaturesAuraPlus.MODID, name));

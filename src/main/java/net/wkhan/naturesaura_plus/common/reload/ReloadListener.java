@@ -118,6 +118,15 @@ public class ReloadListener
                                     AuraGenRules.addAnimalGeneration(rule);
                                 });
                     }
+                    case "aura_gen:chorus_gen" -> {
+                        DataResult<ChorusGenRule> result = ChorusGenRule.CODEC.parse(JsonOps.INSTANCE, json)
+                                .mapError(originalError -> "Error in file '" + fileId + "': " + originalError);
+                        result.resultOrPartial(errorMessage -> System.err.println("ChorusGen JSON Error: " + errorMessage))
+                                .ifPresent(rule -> {
+                                    loadedAuraRules.add(fileId.toString());
+                                    AuraGenRules.addChorusGeneration(rule);
+                                });
+                    }
 
                     default -> System.err.println("Unknown rule type '" + type + "' in file: " + fileId);
                 }

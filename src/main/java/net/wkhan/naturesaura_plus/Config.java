@@ -45,9 +45,9 @@ public class Config
             .comment("Number of flowers the flower aura generator block remembers when calculating aura generated amount. (Default: 3)")
             .defineInRange("flowerGenMemorySize", 3, 1, 1000);
 
-    private static final ForgeConfigSpec.IntValue FLOWER_GEN_VITALITY_FLOOR = BUILDER //clarify
-            .comment("Essentially the lowest value of vitality upto which the flower generator generates aura. (Default: 100) \n(Note, beyond 100, the flower generator will generate aura at even 0 vitality, which is its hard floor cap. Check the formula on the wiki for more details.)")
-            .defineInRange("flowerGenVitalityFloor", 100, 0, 1000);
+    private static final ForgeConfigSpec.IntValue FLOWER_GEN_VITALITY_FLOOR = BUILDER
+            .comment("Defines the lowest value of vitality upto which the flower generator generates aura. (Default: 100)")
+            .defineInRange("flowerGenVitalityFloor", 0, 0, 100);
 
     private static final ForgeConfigSpec.DoubleValue FLOWER_GEN_POW_FACTOR = BUILDER
             .comment("The value of the power factor in the aura generation formula for flower generator. Check wiki for more info. (Default: 0.5)")
@@ -68,7 +68,11 @@ public class Config
 
     private static final ForgeConfigSpec.IntValue SLIME_GEN_RANGE = BUILDER
             .comment("Cubical size radius (half-length) for range of the slime generator in blocks. (Default: 8)")
-            .defineInRange("animalGenRange", 8, 1, 32); //CHECK
+            .defineInRange("slimeGenRange", 8, 1, 32);
+
+    private static final ForgeConfigSpec.IntValue CHORUS_GEN_RANGE = BUILDER
+            .comment("Cubical size radius (half-length) for range of the chorus generator to check for valid plants in blocks. (Default: 2)")
+            .defineInRange("chorusGenRange", 2, 1, 10); //CHECK
 
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 
@@ -86,6 +90,7 @@ public class Config
     public static int mossGenMemorySize;
     public static int animalGenRange;
     public static int slimeGenRange;
+    public static int chorusGenRange;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
@@ -103,5 +108,6 @@ public class Config
         mossGenMemorySize = MOSS_GEN_MEMORY_SIZE.get();
         animalGenRange = ANIMAL_GEN_RANGE.get();
         slimeGenRange = SLIME_GEN_RANGE.get();
+        chorusGenRange = CHORUS_GEN_RANGE.get();
     }
 }

@@ -61,5 +61,17 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
                                 Blocks.DIAMOND_BLOCK,
                                 Blocks.NETHERITE_BLOCK
                         );
+                this.tag(ModTags.Blocks.TOWERING_PLANT_SOIL)
+                        .add(
+                                Blocks.END_STONE
+                        );
+                this.tag(ModTags.Blocks.TOWERING_PLANT_STEM)
+                        .add(
+                                Blocks.CHORUS_PLANT
+                        );
+                this.tag(ModTags.Blocks.TOWERING_PLANT_CAP)
+                        .add(
+                                Blocks.CHORUS_FLOWER
+                        );
         }
 }

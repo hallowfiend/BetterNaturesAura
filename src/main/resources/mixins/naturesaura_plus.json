@@ -22,7 +22,8 @@
     "block.BlockMossGenMixin",
     "block.BlockSlimeGenMixin",
     "auragen.slimegen.SlimeGenMixin",
-    "auragen.slimegen.SlimeGenEventsMixin"
+    "auragen.slimegen.SlimeGenEventsMixin",
+    "auragen.ChorusGenMixin"
   ],
   "client": [],
   "server": []

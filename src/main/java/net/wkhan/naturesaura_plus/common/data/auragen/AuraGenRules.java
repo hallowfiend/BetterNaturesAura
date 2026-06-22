@@ -1,13 +1,17 @@
 package net.wkhan.naturesaura_plus.common.data.auragen;
 
 import de.ellpeck.naturesaura.api.NaturesAuraAPI;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static net.wkhan.naturesaura_plus.NaturesAuraPlusUtils.generateListFromEither;
 
 public final class AuraGenRules {
 
@@ -27,6 +31,10 @@ public final class AuraGenRules {
                                boolean doEntityDropLoot, boolean isBabyValid, boolean isFlatAuraGain, boolean isFlatGenerationTimer) {}
     public static final Map<EntityType<?>, animalValues> ANIMAL_GENERATIONS = new HashMap<>();
 
+    public record chorusValues(Block stemBlock, Block capBlock, int auraGainPerBlock, boolean isSizeScaled,
+                               SoundEvent soundEvent, float soundVolume, float soundPitch) {}
+    public static final Map<Block, chorusValues> CHORUS_GENERATIONS = new HashMap<>();
+
     public static HashMap<String, Integer> auraRulesCount() {
         HashMap<String, Integer> rulesCount = new HashMap<>();
         rulesCount.put("Projectile Generations", NaturesAuraAPI.PROJECTILE_GENERATIONS.size());
@@ -34,6 +42,7 @@ public final class AuraGenRules {
         rulesCount.put("Flower Generations", FLOWER_GENERATIONS.size());
         rulesCount.put("Slime Generations", SLIME_GENERATIONS.size());
         rulesCount.put("Animal Generations", ANIMAL_GENERATIONS.size());
+        rulesCount.put("Chorus Generations", CHORUS_GENERATIONS.size());
         return rulesCount;
     }
 
@@ -43,6 +52,7 @@ public final class AuraGenRules {
         FLOWER_GENERATIONS.clear();
         SLIME_GENERATIONS.clear();
         ANIMAL_GENERATIONS.clear();
+        CHORUS_GENERATIONS.clear();
     }
 
     public static void addProjectileGeneration(ProjectileGenRule rule) {
@@ -60,13 +70,15 @@ public final class AuraGenRules {
                         .filter(e -> e.is(projectileTag))
                         .forEach(e -> NaturesAuraAPI.PROJECTILE_GENERATIONS.put(e, auraAmount));
         }
-    } //refactored
+    } 
 
     public static void addMossGeneration(MossGenRule rule) {
         int auraAmount = rule.auraAmount();
         Block mossBlock = rule.getBlockInput();
         TagKey<Block> mossBlockTag = rule.getBlockInputTag();
         Block deMossedBlock = rule.getBlockOutput();
+
+        if (mossBlock == null && mossBlockTag == null) return;
 
         if (mossBlock != null) {
             MOSS_GENERATIONS.put(mossBlock, new deMossedBlockAuraAmountPair(deMossedBlock, auraAmount));
@@ -76,12 +88,12 @@ public final class AuraGenRules {
         ForgeRegistries.BLOCKS.getValues().stream()
                 .filter(b -> b.defaultBlockState().is(mossBlockTag))
                 .forEach(b -> MOSS_GENERATIONS.put(b, new deMossedBlockAuraAmountPair(deMossedBlock, auraAmount)));
-    } //refactored
+    } 
 
     public static void addFlowerGeneration(FlowerGenRule rule) {
         Block flowerBlock = rule.getBlockInput();
         TagKey<Block> flowerBlockTag = rule.getBlockInputTag();
-        if (flowerBlock == null & flowerBlockTag == null) return;
+        if (flowerBlock == null && flowerBlockTag == null) return;
         int auraAmount = rule.auraAmount();
         byte lucidity = rule.lucidity();
         byte obscurity = rule.obscurity();
@@ -95,7 +107,7 @@ public final class AuraGenRules {
         ForgeRegistries.BLOCKS.getValues().stream()
                 .filter(b -> b.defaultBlockState().is(flowerBlockTag))
                 .forEach(b -> FLOWER_GENERATIONS.put(b, new flowerValues(auraAmount, lucidity, obscurity, obscurityScale)));
-    } //refactored
+    } 
 
     public static void addSlimeGeneration(SlimeGenRule rule) {
         int auraAmount = rule.auraAmount();
@@ -125,7 +137,7 @@ public final class AuraGenRules {
                                     sizeModifier,doSlimeSizeScaling,doEntityDropLoot,isFlatGenerationTimer))
             );
         }
-    } //refactored
+    } 
 
     public static void addAnimalGeneration(AnimalGenRule rule) {
         int minimumTimeAliveForGenerationTime = rule.minimumTimeAliveForGenerationTime();
@@ -158,6 +170,29 @@ public final class AuraGenRules {
                                     isBabyValid, isFlatAuraGain, isFlatGenerationTimer))
                     );
         }
-    } //refactored
+    } 
+
+    public static void addChorusGeneration(ChorusGenRule rule) { 
+        Block soilBlock = rule.getBlockSoil();
+        TagKey<Block> soilBlockTag = rule.getBlockSoilTag();
+        if (soilBlock == null && soilBlockTag == null) return;
+        int auraGainPerBlock = rule.auraGainPerBlock();
+        boolean isSizeScaled = rule.isSizeScaled();
+        SoundEvent soundEvent = rule.soundEvent();
+        float soundVolume = rule.soundVolume();
+        float soundPitch = rule.soundPitch();
+        //How does this handle nulls?
+        List<Block> listSoil = generateListFromEither(rule.soilBlockId(),ForgeRegistries.BLOCKS);
+        List<Block> listStem = generateListFromEither(rule.stemBlockId(),ForgeRegistries.BLOCKS);
+        List<Block> listCap = generateListFromEither(rule.capBlockId(),ForgeRegistries.BLOCKS);
+
+        for (Block soil : listSoil) {
+            for (Block stem : listStem) {
+                for (Block cap : listCap) {
+                    CHORUS_GENERATIONS.put(soil, new chorusValues(stem, cap, auraGainPerBlock, isSizeScaled, soundEvent, soundVolume, soundPitch));
+                }
+            }
+        }
+    }
 }
 

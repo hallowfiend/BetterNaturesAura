@@ -1,0 +1,7 @@
+{
+  "type": "aura_gen:chorus_gen",
+  "block_plant_soil": "minecraft:end_stone",
+  "block_plant_stem": "minecraft:chorus_plant",
+  "block_plant_cap": "minecraft:chorus_flower",
+  "aura_gain_per_block": 300
+}
