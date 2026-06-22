@@ -27,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Deque;
-import java.util.Set;
+import java.util.List;
 
 import static net.wkhan.naturesaura_plus.Config.chorusGenRange;
 import static net.wkhan.naturesaura_plus.NaturesAuraPlusUtils.crawlConnectedBlocks;
@@ -42,6 +42,14 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
     @Shadow @Final private Deque<BlockPos> currentlyBreaking;
     @Shadow private int auraPerBlock;
     @Unique private String naturesaura_plus$chorusGenSoilBlock;
+    @Unique private AuraGenRules.chorusValues naturesaura_plus$chorusValues;
+    @Unique private void naturesaura_plus$clearInternalData() {
+        this.currentlyBreaking.clear();
+        this.auraPerBlock = 0;
+        this.naturesaura_plus$chorusGenSoilBlock = null;
+        this.naturesaura_plus$chorusValues = null;
+        this.setChanged();
+    }
 
     //Customize tick method, and add the appropriate blocks to tags in tag generator
 
@@ -56,14 +64,12 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
         if (this.level.isClientSide()) return;
         if (this.level.getGameTime() % 5L != 0L) return;
         if (this.currentlyBreaking.isEmpty()) return;
-        BlockPos pos = this.currentlyBreaking.removeLast();
+        BlockPos pos = this.currentlyBreaking.removeLast(); //might not work
         Block block = this.level.getBlockState(pos).getBlock();
-        AuraGenRules.chorusValues chorusValues = CHORUS_GENERATIONS.get(ForgeRegistries.BLOCKS
-                .getValue(ResourceLocation.parse(this.naturesaura_plus$chorusGenSoilBlock))); //might be laggy
-        if (block != chorusValues.stemBlock() && block != chorusValues.capBlock()) {
-            this.currentlyBreaking.clear();
-            this.auraPerBlock = 0;
-            this.naturesaura_plus$chorusGenSoilBlock = null;
+        System.out.println(block + "\n" + this.naturesaura_plus$chorusValues);
+        if (naturesaura_plus$chorusValues == null || (block != this.naturesaura_plus$chorusValues.stemBlock()
+                && block != this.naturesaura_plus$chorusValues.capBlock())) {
+            naturesaura_plus$clearInternalData();
             return;
         }
         PacketHandler.sendToAllAround(this.level, this.worldPosition, 32,
@@ -72,7 +78,7 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
         this.level.removeBlock(pos, false);
         this.level.playSound((Player)null, (double)this.worldPosition.getX() + (double)0.5F,
                 (double)this.worldPosition.getY() + (double)0.5F, (double)this.worldPosition.getZ() + (double)0.5F,
-                chorusValues.soundEvent(), SoundSource.BLOCKS, chorusValues.soundVolume(), chorusValues.soundPitch());
+                this.naturesaura_plus$chorusValues.soundEvent(), SoundSource.BLOCKS, this.naturesaura_plus$chorusValues.soundVolume(), this.naturesaura_plus$chorusValues.soundPitch());
         this.generateAura(this.auraPerBlock);
         this.setChanged();
     }
@@ -89,6 +95,7 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
             super.onRedstonePowerChange(newPower);
             return;
         }
+        naturesaura_plus$clearInternalData();
         int range = chorusGenRange;
         chorusClimb:
         for(int x = -range; x <= range; ++x) {
@@ -96,22 +103,19 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
                 for(int z = -range; z <= range; ++z) {
                     BlockPos offset = this.worldPosition.offset(x, y, z);
                     Block soil = this.level.getBlockState(offset).getBlock(); //npe potential?
-                    System.out.println("soil: " + soil);
+                    System.out.println(CHORUS_GENERATIONS.keySet());
                     if (!CHORUS_GENERATIONS.containsKey(soil)) continue;
                     BlockState shoot = this.level.getBlockState(offset.above());
-                    System.out.println("shoot: " + shoot);
-                    if (!shoot.is(ModTags.Blocks.TOWERING_PLANT_STEM) || !shoot.is(ModTags.Blocks.TOWERING_PLANT_CAP)) continue;
-                    AuraGenRules.chorusValues chorusValues = CHORUS_GENERATIONS.get(soil);
-                    Set<BlockPos> plants = crawlConnectedBlocks(this.level,offset.above(),1000, //make cap a config
-                            stem -> stem.getBlock() == chorusValues.stemBlock(),
-                            cap -> cap.getBlock() == chorusValues.capBlock());
+                    if (!shoot.is(ModTags.Blocks.TOWERING_PLANT_STEM) && !shoot.is(ModTags.Blocks.TOWERING_PLANT_CAP)) continue;
+                    this.naturesaura_plus$chorusValues = CHORUS_GENERATIONS.get(soil);
+                    List<BlockPos> plants = crawlConnectedBlocks(this.level,offset.above(),1000, //make cap a config
+                            stem -> stem.getBlock() == this.naturesaura_plus$chorusValues.stemBlock(),
+                            cap -> cap.getBlock() == this.naturesaura_plus$chorusValues.capBlock());
                     if (plants.size() <= 1) continue;
-                    System.out.println("big plant");
                     this.currentlyBreaking.addAll(plants);
                     this.currentlyBreaking.addFirst(offset);
-                    if (chorusValues.isSizeScaled()) this.auraPerBlock = plants.size() * chorusValues.auraGainPerBlock();
-                    else this.auraPerBlock = chorusValues.auraGainPerBlock();
-                    System.out.println(this.auraPerBlock);
+                    if (this.naturesaura_plus$chorusValues.isSizeScaled()) this.auraPerBlock = plants.size() * this.naturesaura_plus$chorusValues.auraGainPerBlock();
+                    else this.auraPerBlock = this.naturesaura_plus$chorusValues.auraGainPerBlock();
                     this.naturesaura_plus$chorusGenSoilBlock = ForgeRegistries.BLOCKS.getKey(soil).toString();
                     this.setChanged();
                     break chorusClimb;
@@ -154,7 +158,7 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
         ci.cancel();
         super.readNBT(compound, type);
         if (type == SaveType.TILE) {
-            this.currentlyBreaking.clear();
+            naturesaura_plus$clearInternalData();
             ListTag list = compound.getList("breaking", 10);
 
             for(int i = 0; i < list.size(); ++i) {
@@ -163,7 +167,9 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
 
             this.auraPerBlock = compound.getInt("aura");
             this.naturesaura_plus$chorusGenSoilBlock = compound.getString("soil_block"); //check
+            if (this.naturesaura_plus$chorusGenSoilBlock.isEmpty() || this.naturesaura_plus$chorusGenSoilBlock.isBlank()) return;
+            this.naturesaura_plus$chorusValues = CHORUS_GENERATIONS.get(ForgeRegistries.BLOCKS
+                    .getValue(ResourceLocation.parse(this.naturesaura_plus$chorusGenSoilBlock)));
         }
     }
-
 }

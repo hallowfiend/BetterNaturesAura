@@ -48,35 +48,47 @@ public class NaturesAuraPlusUtils {
         return visited;
     }
 
-    public static Set<BlockPos> crawlConnectedBlocks(Level level, BlockPos startPos, int maxBlocks,
+    public static List<BlockPos> crawlConnectedBlocks(Level level, BlockPos startPos, int maxBlocks,
                                                      Predicate<BlockState> stemTest, Predicate<BlockState> capTest) {
-        Set<BlockPos> visited = new HashSet<>();
+        List<BlockPos> visited = new ArrayList<>();
+        Set<BlockPos> visitedCheckList = new HashSet<>();
         Queue<BlockPos> queue = new LinkedList<>();
 
         queue.add(startPos);
         visited.add(startPos);
+        visitedCheckList.add(startPos);
 
         while (!queue.isEmpty() && visited.size() < maxBlocks) {
             BlockPos current = queue.poll();
+            List<BlockPos> visitedTransient = new ArrayList<>();
+            int currentChanges = 0;
 
-            // 26-Way Volumetric Check (Checks all diagonals and corners)
             for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1; y++) {
                     for (int z = -1; z <= 1; z++) {
                         if (x == 0 && y == 0 && z == 0) continue;
                         BlockPos neighbor = current.offset(x, y, z);
-                        if (visited.contains(neighbor)) continue;
+                        if (visitedCheckList.contains(neighbor)) continue;
                         BlockState neighbourState = level.getBlockState(neighbor);
                         boolean isStem = stemTest.test(neighbourState);
                         boolean isCap = capTest.test(neighbourState);
                         if (isStem) {
-                            visited.add(neighbor);
+                            visitedTransient.add(neighbor);
+                            visitedCheckList.add(neighbor);
                             queue.add(neighbor);
+                            currentChanges++;
+                            continue;
                         }
-                        else if (isCap) visited.add(neighbor);
+                        if (isCap) {
+                            visitedTransient.add(neighbor);
+                            visitedCheckList.add(neighbor);
+                            currentChanges++;
+                        }
                     }
                 }
             }
+            if (currentChanges > 1) visitedTransient.sort(Comparator.comparingDouble(pos -> pos.distSqr(current)));
+            visited.addAll(visitedTransient);
         }
         return visited;
     }

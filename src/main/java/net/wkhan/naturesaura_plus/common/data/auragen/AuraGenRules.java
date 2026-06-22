@@ -181,18 +181,12 @@ public final class AuraGenRules {
         SoundEvent soundEvent = rule.soundEvent();
         float soundVolume = rule.soundVolume();
         float soundPitch = rule.soundPitch();
-        //How does this handle nulls?
         List<Block> listSoil = generateListFromEither(rule.soilBlockId(),ForgeRegistries.BLOCKS);
-        List<Block> listStem = generateListFromEither(rule.stemBlockId(),ForgeRegistries.BLOCKS);
-        List<Block> listCap = generateListFromEither(rule.capBlockId(),ForgeRegistries.BLOCKS);
+        Block stem = rule.stemBlock();
+        Block cap = rule.capBlock();
 
-        for (Block soil : listSoil) {
-            for (Block stem : listStem) {
-                for (Block cap : listCap) {
-                    CHORUS_GENERATIONS.put(soil, new chorusValues(stem, cap, auraGainPerBlock, isSizeScaled, soundEvent, soundVolume, soundPitch));
-                }
-            }
-        }
+        for (Block soil : listSoil) CHORUS_GENERATIONS.put(soil, new chorusValues
+                (stem, cap, auraGainPerBlock, isSizeScaled, soundEvent, soundVolume, soundPitch));
     }
 }
 

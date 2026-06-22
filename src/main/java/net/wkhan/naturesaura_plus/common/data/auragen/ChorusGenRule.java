@@ -13,8 +13,8 @@ import net.wkhan.naturesaura_plus.NaturesAuraPlusUtils;
 
 public record ChorusGenRule(
         Either<Block, TagKey<Block>> soilBlockId,
-        Either<Block, TagKey<Block>> stemBlockId,
-        Either<Block, TagKey<Block>> capBlockId,
+        Block stemBlock,
+        Block capBlock,
         int auraGainPerBlock,
         boolean isSizeScaled,
         SoundEvent soundEvent,
@@ -26,12 +26,10 @@ public record ChorusGenRule(
             instance.group(
                     NaturesAuraPlusUtils.elementOrTagCodec(ForgeRegistries.BLOCKS, Registries.BLOCK)
                             .fieldOf("block_plant_soil").forGetter(ChorusGenRule::soilBlockId),
-                    NaturesAuraPlusUtils.elementOrTagCodec(ForgeRegistries.BLOCKS, Registries.BLOCK)
-                            .fieldOf("block_plant_stem").forGetter(ChorusGenRule::stemBlockId),
-                    NaturesAuraPlusUtils.elementOrTagCodec(ForgeRegistries.BLOCKS, Registries.BLOCK)
-                            .fieldOf("block_plant_cap").forGetter(ChorusGenRule::capBlockId),
+                    ForgeRegistries.BLOCKS.getCodec().fieldOf("block_plant_stem").forGetter(ChorusGenRule::stemBlock),
+                    ForgeRegistries.BLOCKS.getCodec().fieldOf("block_plant_cap").forGetter(ChorusGenRule::capBlock),
                     Codec.INT.fieldOf("aura_gain_per_block").forGetter(ChorusGenRule::auraGainPerBlock),
-                    Codec.BOOL.optionalFieldOf("isSizeScaled", true).forGetter(ChorusGenRule::isSizeScaled),
+                    Codec.BOOL.optionalFieldOf("is_size_scaled", true).forGetter(ChorusGenRule::isSizeScaled),
                     ForgeRegistries.SOUND_EVENTS.getCodec().optionalFieldOf("break_sound", SoundEvents.CHORUS_FRUIT_TELEPORT).forGetter(ChorusGenRule::soundEvent),
                     Codec.FLOAT.optionalFieldOf("break_sound_volume", 0.5F).forGetter(ChorusGenRule::soundVolume),
                     Codec.FLOAT.optionalFieldOf("break_sound_pitch", 1F).forGetter(ChorusGenRule::soundPitch)
