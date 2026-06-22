@@ -1,15 +1,22 @@
 package net.wkhan.naturesaura_plus.common.item;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.wkhan.naturesaura_plus.NaturesAuraPlus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class ModItems {
 
@@ -26,7 +33,15 @@ public class ModItems {
                     .saturationMod(0.8f)
                     .effect(() -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 100, 1), 1)
                     .build())
-                    .stacksTo(16).rarity(Rarity.COMMON)));
+                    .stacksTo(16).rarity(Rarity.COMMON)) {
+                @Override public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
+                    return UseAnim.DRINK;
+                }
+                @Override public void appendHoverText(ItemStack p_41421_, @Nullable Level p_41422_, List<Component> toolTip, TooltipFlag p_41424_) {
+                    toolTip.add(Component.translatable("info.naturesaura_plus.coffee")
+                            .setStyle(Style.EMPTY.withItalic(true).applyFormat(ChatFormatting.GRAY)));
+                }
+            });
 
     public static final RegistryObject<Item> AURA_COFFEE = ITEMS.register("aura_coffee",
             () -> new ItemRecallCoffee(new Item.Properties().food(new FoodProperties.Builder()
