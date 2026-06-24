@@ -132,7 +132,6 @@ public abstract class FlowerGenMixin extends BlockEntityImpl implements FlowerGe
     private void naturesaura_plus$writeNBT(CompoundTag compound, SaveType type, CallbackInfo ci) {
         ci.cancel();
         super.writeNBT(compound, type);
-//        if (type == SaveType.SYNC) return;
         ByteTag vitality = ByteTag.valueOf(naturesaura_plus$vitality);
         compound.put("vitality", vitality);
         if (naturesaura_plus$flowerMemory.isEmpty()) return;
@@ -160,17 +159,6 @@ public abstract class FlowerGenMixin extends BlockEntityImpl implements FlowerGe
     private void naturesaura_plus$readNBT(CompoundTag compound, SaveType type, CallbackInfo ci) {
         ci.cancel();
         super.readNBT(compound, type);
-//        if (type == SaveType.SYNC) {
-//            for(Tag t : compound.getList("flower_memory", 10)) {
-//                CompoundTag tag = (CompoundTag)t;
-//                Block flower = ForgeRegistries.BLOCKS.getValue(ResourceLocation.parse(tag.getString("block")));
-//                if (flower == null) continue;
-//                S2CPacketFlowerGenUpdate msg = new S2CPacketFlowerGenUpdate(this.naturesaura_plus$vitality, flower, this.getBlockPos());
-//                ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_CHUNK.with(
-//                        () -> this.level.getChunkAt(this.getBlockPos())), msg);
-//            }
-//            return;
-//        }
         naturesaura_plus$vitality = compound.getByte("vitality");
         for(Tag t : compound.getList("flower_memory", 10)) {
             CompoundTag tag = (CompoundTag)t;
