@@ -25,12 +25,9 @@ public abstract class SlimeGenMixin extends BlockEntityImpl implements SlimeGene
         super(type, pos, state);
     }
 
-    @Shadow private int generationTimer;
-
-    @Shadow private int amountToRelease;
-
-    @Shadow
-    private int color;
+    @Shadow(remap = false) private int generationTimer;
+    @Shadow(remap = false) private int amountToRelease;
+    @Shadow(remap = false) private int color;
 
     @Inject(
             method = "tick",
