@@ -1,7 +1,7 @@
 {
   "type": "aura_gen:flower_gen",
   "block_to_convert": "minecraft:lilac",
-  "aura_gain": 25000,
+  "aura_gain": 2500,
   "lucidity": 5,
   "obscurity": 20,
   "obscurity_scale": 1
