@@ -28,8 +28,8 @@ import static net.wkhan.naturesaura_plus.Config.animalGenRange;
 import static net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules.ANIMAL_GENERATIONS;
 
 @Mixin(BlockAnimalGenerator.class)
-public class AnimalGenMixin extends BlockContainerImpl {
-    public AnimalGenMixin(String baseName, Class<? extends BlockEntity> tileClass, Properties properties) {
+public class BlockAnimalGenMixin extends BlockContainerImpl {
+    public BlockAnimalGenMixin(String baseName, Class<? extends BlockEntity> tileClass, Properties properties) {
         super(baseName, tileClass, properties);
     }
 
