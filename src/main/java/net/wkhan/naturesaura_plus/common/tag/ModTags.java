@@ -11,6 +11,7 @@ import net.wkhan.naturesaura_plus.NaturesAuraPlus;
 public class ModTags {
     public static class Items {
         public static final TagKey<Item> CANNOT_APPLY_BREAK_PREVENTION = tag("cannot_apply_break_prevention");
+        public static final TagKey<Item> VALID_WOODEN_STAND_MATERIAL = tag("valid_wooden_stand_material");
 
         private static TagKey<Item> tag(String name) {
             return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(NaturesAuraPlus.MODID, name));

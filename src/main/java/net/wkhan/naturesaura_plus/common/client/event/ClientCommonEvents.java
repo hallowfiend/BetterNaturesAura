@@ -6,6 +6,8 @@ import de.ellpeck.naturesaura.events.ClientEvents;
 import de.ellpeck.naturesaura.items.ItemEye;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -15,6 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
@@ -23,7 +26,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.wkhan.naturesaura_plus.NaturesAuraPlus;
 import net.wkhan.naturesaura_plus.NaturesAuraPlusUtils;
 import net.wkhan.naturesaura_plus.common.client.ClientDualBarTooltipComponent;
-import net.wkhan.naturesaura_plus.common.data.auragen.FlowerGeneration;
+import net.wkhan.naturesaura_plus.common.client.render.DynamicWoodStandModel;
+import net.wkhan.naturesaura_plus.common.data.duckfaces.FlowerGeneration;
 import net.wkhan.naturesaura_plus.compat.botania.ItemAuraManaHolder;
 import vazkii.patchouli.common.item.ItemModBook;
 
@@ -43,28 +47,33 @@ public class ClientCommonEvents {
                     ItemAuraManaHolder.DualAuraManaItemImpl.RecordDualAuraMana.class,
                     data -> new ClientDualBarTooltipComponent(data.aura(), data.max_aura(), data.mana(), data.max_mana()));
         }
+
+        @SubscribeEvent
+        public static void onModelBake(ModelEvent.ModifyBakingResult event) {
+            ResourceLocation standId = ResourceLocation.fromNamespaceAndPath("naturesaura", "wood_stand");
+            ModelResourceLocation modelLocWaterLogged = new ModelResourceLocation(standId, "waterlogged=true");
+            ModelResourceLocation modelLoc = new ModelResourceLocation(standId, "waterlogged=false");
+
+            BakedModel existingModelWaterLogged = event.getModels().get(modelLocWaterLogged);
+            BakedModel existingModel = event.getModels().get(modelLoc);
+            if (existingModelWaterLogged == null || existingModel == null)
+                return;
+            event.getModels().put(modelLocWaterLogged, new DynamicWoodStandModel(existingModelWaterLogged));
+            event.getModels().put(modelLoc, new DynamicWoodStandModel(existingModel));
+       }
     }
 
     private static final List<Field> auraItemFields = new ArrayList<>();
-    private static boolean reflectionFailed = false; // THE KILL SWITCH
 
     static {
         try {
-            // Obfuscation-Proofing: Find all fields in ClientEvents that are static ImageStacks
             for (Field field : ClientEvents.class.getDeclaredFields()) {
-                if (Modifier.isStatic(field.getModifiers()) && field.getType() == ItemStack.class) {
-                    field.setAccessible(true);
-                    auraItemFields.add(field);
-                }
-            }
-            if (auraItemFields.isEmpty()) {
-                System.err.println("[Nature's Aura Plus] Could not find any ItemStack fields. Obfuscation mapping issue?");
-                reflectionFailed = true; // Trip kill-switch, prevent crash
+                if (!Modifier.isStatic(field.getModifiers()) || field.getType() != ItemStack.class) continue;
+                field.setAccessible(true);
+                auraItemFields.add(field);
             }
         } catch (Exception e) {
-            System.err.println("[Nature's Aura Plus] Critical failure during reflection setup!");
-            e.printStackTrace(); // Print only ONCE
-            reflectionFailed = true; // Trip kill-switch
+            System.err.println("Failed to access de.ellpeck.naturesaura.events.ClientEvents classes' private variable (heldEye) via reflection.");
         }
     }
 
@@ -89,10 +98,9 @@ public class ClientCommonEvents {
             for (Field field : auraItemFields) {
                 try {
                     ItemStack stack = (ItemStack) field.get(null);
-                    if (stack != null && !stack.isEmpty() && stack.getItem() instanceof ItemEye) {
-                        hasEye = true;
-                        break;
-                    }
+                    if (stack == null || stack.isEmpty() || !(stack.getItem() instanceof ItemEye)) continue;
+                    hasEye = true;
+                    break;
                 } catch (Exception ignored) {}
             }
             if (!hasEye) return;

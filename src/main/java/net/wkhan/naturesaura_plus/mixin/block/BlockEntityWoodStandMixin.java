@@ -9,6 +9,8 @@ import de.ellpeck.naturesaura.packet.PacketParticles;
 import de.ellpeck.naturesaura.recipes.TreeRitualRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -16,13 +18,18 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.wkhan.naturesaura_plus.Config;
 import net.wkhan.naturesaura_plus.NaturesAuraPlusUtils;
+import net.wkhan.naturesaura_plus.common.data.duckfaces.WoodStandRender;
 import net.wkhan.naturesaura_plus.common.tag.ModTags;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -33,12 +40,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
 
+import static net.wkhan.naturesaura_plus.common.client.render.DynamicWoodStandModel.STAND_MATERIAL;
+
 @Mixin(BlockEntityWoodStand.class)
-public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
+public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl implements WoodStandRender {
     public BlockEntityWoodStandMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
+    @Unique private BlockState naturesaura_plus$standMaterial;
     @Unique private Set<BlockPos> naturesaura_plus$treeCache = null;
 
     @Unique
@@ -210,6 +220,66 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl{
             this.level.playSound(null, (double) this.worldPosition.getX() + (double) 0.5F, (double) this.worldPosition.getY() + (double) 0.5F, (double) this.worldPosition.getZ() + (double) 0.5F, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 0.65F, 1.0F);
             naturesaura_plus$abortRitual();
         }
+    }
+
+    @Inject(
+            method = "writeNBT",
+            at = @At("TAIL"),
+            remap = false
+    )
+    private void naturesaura_plus$writeNBTWoodType(CompoundTag compound, SaveType type, CallbackInfo ci) {
+        if (type == SaveType.BLOCK) return;
+        if (this.naturesaura_plus$standMaterial == null) this.naturesaura_plus$standMaterial = Blocks.AIR.defaultBlockState();
+        ResourceLocation blockResourceLocation = ForgeRegistries.BLOCKS.getKey(this.naturesaura_plus$standMaterial.getBlock());
+        if (blockResourceLocation == null) {
+            compound.putString("render_material", Blocks.AIR.toString());
+            return;
+        }
+        compound.putString("render_material", blockResourceLocation.toString());
+    }
+
+    @Inject(
+            method = "readNBT",
+            at = @At("TAIL"),
+            remap = false
+    )
+    private void naturesaura_plus$readNBTWoodType(CompoundTag compound, SaveType type, CallbackInfo ci) {
+        if (type == SaveType.BLOCK) return;
+        if (!compound.contains("render_material")) {
+            this.naturesaura_plus$standMaterial = Blocks.AIR.defaultBlockState();
+            return;
+        }
+        ResourceLocation resourceLocation = ResourceLocation.tryParse(compound.getString("render_material"));
+        if (resourceLocation == null) {
+            this.naturesaura_plus$standMaterial = Blocks.AIR.defaultBlockState();
+            return;
+        }
+        Block block = ForgeRegistries.BLOCKS.getValue(resourceLocation);
+        if (block == null) {
+            this.naturesaura_plus$standMaterial = Blocks.AIR.defaultBlockState();
+            return;
+        }
+        this.naturesaura_plus$standMaterial = block.defaultBlockState();
+
+        Level level = this.getLevel();
+        if(level != null && level.isClientSide())
+            this.requestModelDataUpdate();
+    }
+
+    @Override
+    public BlockState naturesaura_plus$getWoodStandMaterialBlockState() {
+        return this.naturesaura_plus$standMaterial;
+    }
+
+    @Override
+    public void naturesaura_plus$setWoodStandMaterialBlockState(BlockState material) {
+        this.naturesaura_plus$standMaterial = material;
+    }
+
+    @Override
+    public @NotNull ModelData getModelData() {
+        return ModelData.builder()
+                .with(STAND_MATERIAL, this.naturesaura_plus$standMaterial).build(); //i hope you play nice with nulls
     }
 }
 

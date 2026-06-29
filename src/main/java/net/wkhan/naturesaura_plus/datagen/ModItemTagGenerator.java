@@ -3,6 +3,7 @@ package net.wkhan.naturesaura_plus.datagen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -21,5 +22,7 @@ public class ModItemTagGenerator extends ItemTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider pProvider) {
         this.tag(ModTags.Items.CANNOT_APPLY_BREAK_PREVENTION).add(Items.ELYTRA);
+
+        this.tag(ModTags.Items.VALID_WOODEN_STAND_MATERIAL).addTag(ItemTags.LOGS);
     }
 }
