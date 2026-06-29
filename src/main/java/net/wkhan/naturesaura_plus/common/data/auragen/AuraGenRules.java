@@ -9,9 +9,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.wkhan.naturesaura_plus.NaturesAuraPlusUtils.generateListFromEither;
 
@@ -61,7 +59,17 @@ public final class AuraGenRules {
         CHORUS_GENERATIONS.clear();
         OAK_GENERATIONS.clear();
     }
+    public static void addAuraGenerations() {
+        addProjectileGenerations();
+        addMossGenerations();
+        addFlowerGenerations();
+        addSlimeGenerations();
+        addAnimalGenerations();
+        addChorusGenerations();
+        addOakGenerations();
+    }
 
+    public static final Queue<ProjectileGenRule> projectileRulesQueue = new ArrayDeque<>();
     public static void addProjectileGeneration(ProjectileGenRule rule) {
         int auraAmount = rule.auraAmount();
         EntityType<?> projectile = rule.getProjectile();
@@ -77,8 +85,12 @@ public final class AuraGenRules {
                         .filter(e -> e.is(projectileTag))
                         .forEach(e -> NaturesAuraAPI.PROJECTILE_GENERATIONS.put(e, auraAmount));
         }
-    } 
+    }
+    public static void addProjectileGenerations() {
+        while(!projectileRulesQueue.isEmpty()) addProjectileGeneration(projectileRulesQueue.poll());
+    }
 
+    public static final Queue<MossGenRule> mossRulesQueue = new ArrayDeque<>();
     public static void addMossGeneration(MossGenRule rule) {
         int auraAmount = rule.auraAmount();
         Block mossBlock = rule.getBlockInput();
@@ -95,8 +107,12 @@ public final class AuraGenRules {
         ForgeRegistries.BLOCKS.getValues().stream()
                 .filter(b -> b.defaultBlockState().is(mossBlockTag))
                 .forEach(b -> MOSS_GENERATIONS.put(b, new deMossedBlockAuraAmountPair(deMossedBlock, auraAmount)));
-    } 
+    }
+    public static void addMossGenerations() {
+        while(!mossRulesQueue.isEmpty()) addMossGeneration(mossRulesQueue.poll());
+    }
 
+    public static final Queue<FlowerGenRule> flowerRulesQueue = new ArrayDeque<>();
     public static void addFlowerGeneration(FlowerGenRule rule) {
         Block flowerBlock = rule.getBlockInput();
         TagKey<Block> flowerBlockTag = rule.getBlockInputTag();
@@ -114,8 +130,12 @@ public final class AuraGenRules {
         ForgeRegistries.BLOCKS.getValues().stream()
                 .filter(b -> b.defaultBlockState().is(flowerBlockTag))
                 .forEach(b -> FLOWER_GENERATIONS.put(b, new flowerValues(auraAmount, lucidity, obscurity, obscurityScale)));
-    } 
+    }
+    public static void addFlowerGenerations() {
+        while(!flowerRulesQueue.isEmpty()) addFlowerGeneration(flowerRulesQueue.poll());
+    }
 
+    public static final Queue<SlimeGenRule> slimeRulesQueue = new ArrayDeque<>();
     public static void addSlimeGeneration(SlimeGenRule rule) {
         int auraAmount = rule.auraAmount();
         int slimeColor = rule.slimeColor();
@@ -144,8 +164,12 @@ public final class AuraGenRules {
                                     sizeModifier,doSlimeSizeScaling,doEntityDropLoot,isFlatGenerationTimer))
             );
         }
-    } 
+    }
+    public static void addSlimeGenerations() {
+        while(!slimeRulesQueue.isEmpty()) addSlimeGeneration(slimeRulesQueue.poll());
+    }
 
+    public static final Queue<AnimalGenRule> animalRulesQueue = new ArrayDeque<>();
     public static void addAnimalGeneration(AnimalGenRule rule) {
         int minimumTimeAliveForGenerationTime = rule.minimumTimeAliveForGenerationTime();
         int maximumGenerationTime = rule.maximumGenerationTime();
@@ -177,8 +201,12 @@ public final class AuraGenRules {
                                     isBabyValid, isFlatAuraGain, isFlatGenerationTimer))
                     );
         }
-    } 
+    }
+    public static void addAnimalGenerations() {
+        while(!animalRulesQueue.isEmpty()) addAnimalGeneration(animalRulesQueue.poll());
+    }
 
+    public static final Queue<ChorusGenRule> chorusRulesQueue = new ArrayDeque<>();
     public static void addChorusGeneration(ChorusGenRule rule) { 
         Block soilBlock = rule.getBlockSoil();
         TagKey<Block> soilBlockTag = rule.getBlockSoilTag();
@@ -195,13 +223,20 @@ public final class AuraGenRules {
         for (Block soil : listSoil) CHORUS_GENERATIONS.put(soil, new chorusValues
                 (stem, cap, auraGainPerBlock, isSizeScaled, soundEvent, soundVolume, soundPitch));
     }
+    public static void addChorusGenerations() {
+        while(!chorusRulesQueue.isEmpty()) addChorusGeneration(chorusRulesQueue.poll());
+    }
 
+    public static final Queue<OakGenRule> oakRulesQueue = new ArrayDeque<>();
     public static void addOakGeneration(OakGenRule rule) {
         ResourceKey<ConfiguredFeature<?,?>> featureToReplace = rule.featureToReplace();
         ResourceKey<ConfiguredFeature<?,?>> featureReplacement = rule.featureReplacement();
         int auraAmount = rule.auraAmount();
 
         OAK_GENERATIONS.put(featureToReplace, new oakValues(featureReplacement, auraAmount));
+    }
+    public static void addOakGenerations() {
+        while(!oakRulesQueue.isEmpty()) addOakGeneration(oakRulesQueue.poll());
     }
 }
 

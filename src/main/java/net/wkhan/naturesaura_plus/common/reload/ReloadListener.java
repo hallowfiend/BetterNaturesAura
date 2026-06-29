@@ -9,6 +9,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.wkhan.naturesaura_plus.NaturesAuraPlus;
 import net.wkhan.naturesaura_plus.common.data.*;
 import net.wkhan.naturesaura_plus.common.data.auragen.*;
 import net.wkhan.naturesaura_plus.common.data.block.BlockInteractionRule;
@@ -20,12 +24,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules.addAuraGenerations;
+
 public class ReloadListener
         extends SimpleJsonResourceReloadListener {
 
     public ReloadListener() {
         super(new Gson(), "interactions");
     }
+    protected static final List<String> loadedAuraRules = new ArrayList<>();
+    protected final List<String> loadedBlockRules = new ArrayList<>();
+    protected final List<String> loadedEntityRules = new ArrayList<>();
+    protected final List<String> loadedAnvilCosts = new ArrayList<>();
 
     @Override
     protected void apply(
@@ -33,16 +43,7 @@ public class ReloadListener
             ResourceManager manager,
             ProfilerFiller profiler
     ) {
-        EntityInteractionRules.clear();
-        BlockInteractionRules.clear();
-        AnvilCostRules.clear();
-        AuraGenRules.auraGenerationClear();
-
-        List<String> loadedBlockRules = new ArrayList<>();
-        List<String> loadedEntityRules = new ArrayList<>();
-        List<String> loadedAnvilCosts = new ArrayList<>();
-        List<String> loadedAuraRules = new ArrayList<>();
-
+        clearData();
         data.forEach((fileId, jsonElement) -> {
             try {
                 JsonObject json = jsonElement.getAsJsonObject();
@@ -52,19 +53,19 @@ public class ReloadListener
                 }
                 String type = json.get("type").getAsString();
                 switch (type) {
-                    case "prevent_interact:entity" -> {
+                    case "prevent_interact:entity" -> { //refactor
                         EntityInteractionRule rule = new Gson().fromJson(json, EntityInteractionRule.class);
                         rule.setSourceFile(fileId.toString());
                         loadedEntityRules.add(fileId.toString());
                         EntityInteractionRules.add(rule);
                     }
-                    case "broken_prevent_interact:block" -> {
+                    case "broken_prevent_interact:block" -> { //refactor
                         BlockInteractionRule rule = new Gson().fromJson(json, BlockInteractionRule.class);
                         rule.setSourceFile(fileId.toString());
                         loadedBlockRules.add(fileId.toString());
                         BlockInteractionRules.add(rule);
                     }
-                    case "anvil_cost:apply_steel_token" -> {
+                    case "anvil_cost:apply_steel_token" -> { //refactor
                         if (!json.has("levels")) {
                             System.err.println("Missing 'levels' field in anvil cost file: " + fileId);
                             return;
@@ -79,61 +80,61 @@ public class ReloadListener
                         result.resultOrPartial(errorMessage -> System.err.println("ProjectileGen JSON Error: " + errorMessage))
                                 .ifPresent(rule -> {
                                     loadedAuraRules.add(fileId.toString());
-                                    AuraGenRules.addProjectileGeneration(rule);
+                                    AuraGenRules.projectileRulesQueue.add(rule);
                                 });
-                    } //refactored
+                    } 
                     case "aura_gen:moss_gen" -> {
                         DataResult<MossGenRule> result = MossGenRule.CODEC.parse(JsonOps.INSTANCE, json)
                                 .mapError(originalError -> "Error in file '" + fileId + "': " + originalError);
                         result.resultOrPartial(errorMessage -> System.err.println("MossGen JSON Error: " + errorMessage))
                                 .ifPresent(rule -> {
                                     loadedAuraRules.add(fileId.toString());
-                                    AuraGenRules.addMossGeneration(rule);
+                                    AuraGenRules.mossRulesQueue.add(rule);
                                 });
-                    } //refactored
+                    } 
                     case "aura_gen:flower_gen" -> {
                         DataResult<FlowerGenRule> result = FlowerGenRule.CODEC.parse(JsonOps.INSTANCE, json)
                                 .mapError(originalError -> "Error in file '" + fileId + "': " + originalError);
                         result.resultOrPartial(errorMessage -> System.err.println("FlowerGen JSON Error: " + errorMessage))
                                 .ifPresent(rule -> {
                                     loadedAuraRules.add(fileId.toString());
-                                    AuraGenRules.addFlowerGeneration(rule);
+                                    AuraGenRules.flowerRulesQueue.add(rule);
                                 });
-                    } //refactored
-                    case "aura_gen:slime_gen" -> { //refactored
+                    } 
+                    case "aura_gen:slime_gen" -> { 
                         DataResult<SlimeGenRule> result = SlimeGenRule.CODEC.parse(JsonOps.INSTANCE, json)
                                 .mapError(originalError -> "Error in file '" + fileId + "': " + originalError);
                         result.resultOrPartial(errorMessage -> System.err.println("SlimeGen JSON Error: " + errorMessage))
                                 .ifPresent(rule -> {
                                     loadedAuraRules.add(fileId.toString());
-                                    AuraGenRules.addSlimeGeneration(rule);
+                                    AuraGenRules.slimeRulesQueue.add(rule);
                                 });
                     }
-                    case "aura_gen:animal_gen" -> { //refactored
+                    case "aura_gen:animal_gen" -> { 
                         DataResult<AnimalGenRule> result = AnimalGenRule.CODEC.parse(JsonOps.INSTANCE, json)
                                 .mapError(originalError -> "Error in file '" + fileId + "': " + originalError);
                         result.resultOrPartial(errorMessage -> System.err.println("AnimalGen JSON Error: " + errorMessage))
                                 .ifPresent(rule -> {
                                     loadedAuraRules.add(fileId.toString());
-                                    AuraGenRules.addAnimalGeneration(rule);
+                                    AuraGenRules.animalRulesQueue.add(rule);
                                 });
                     }
-                    case "aura_gen:chorus_gen" -> { //refactored
+                    case "aura_gen:chorus_gen" -> { 
                         DataResult<ChorusGenRule> result = ChorusGenRule.CODEC.parse(JsonOps.INSTANCE, json)
                                 .mapError(originalError -> "Error in file '" + fileId + "': " + originalError);
                         result.resultOrPartial(errorMessage -> System.err.println("ChorusGen JSON Error: " + errorMessage))
                                 .ifPresent(rule -> {
                                     loadedAuraRules.add(fileId.toString());
-                                    AuraGenRules.addChorusGeneration(rule);
+                                    AuraGenRules.chorusRulesQueue.add(rule);
                                 });
                     }
-                    case "aura_gen:oak_gen" -> { //refactored
+                    case "aura_gen:oak_gen" -> { 
                         DataResult<OakGenRule> result = OakGenRule.CODEC.parse(JsonOps.INSTANCE, json)
                                 .mapError(originalError -> "Error in file '" + fileId + "': " + originalError);
                         result.resultOrPartial(errorMessage -> System.err.println("OakGen JSON Error: " + errorMessage))
                                 .ifPresent(rule -> {
                                     loadedAuraRules.add(fileId.toString());
-                                    AuraGenRules.addOakGeneration(rule);
+                                    AuraGenRules.oakRulesQueue.add(rule);
                                 });
                     }
 
@@ -146,13 +147,33 @@ public class ReloadListener
             }
         });
 
-        System.out.println("Loaded " + EntityInteractionRules.size() + " entity rules, "
-                + BlockInteractionRules.size() + " block rules, "
-                + AnvilCostRules.size() + " anvil cost rules and \n"
-                + AuraGenRules.auraRulesCount() + " aura gen rules."); //add aura gen rules count
         System.out.println("Entity Rules Loaded: " + loadedEntityRules);
         System.out.println("Block Rules Loaded: " + loadedBlockRules);
         System.out.println("Anvil Costs Loaded: " + loadedAnvilCosts);
-        System.out.println("Aura generation rules loaded: " + loadedAuraRules);
+    }
+
+    private void clearData() {
+        loadedBlockRules.clear();
+        loadedEntityRules.clear();
+        loadedAnvilCosts.clear();
+        loadedAuraRules.clear();
+        EntityInteractionRules.clear();
+        BlockInteractionRules.clear();
+        AnvilCostRules.clear();
+        AuraGenRules.auraGenerationClear();
+    }
+
+    @Mod.EventBusSubscriber(modid = NaturesAuraPlus.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+    public static class onServerSetupEvents {
+
+        @SubscribeEvent
+        public static void onTagsUpdated(TagsUpdatedEvent event) {
+            addAuraGenerations();
+            System.out.println("Loaded " + EntityInteractionRules.size() + " entity rules, "
+                    + BlockInteractionRules.size() + " block rules, "
+                    + AnvilCostRules.size() + " anvil cost rules and \n"
+                    + AuraGenRules.auraRulesCount() + " aura gen rules.");
+            System.out.println("Aura generation rules loaded: " + loadedAuraRules);
+        }
     }
 }
