@@ -1,4 +1,4 @@
-package net.wkhan.naturesaura_plus.common.data.auragen;
+package net.wkhan.naturesaura_plus.common.data.duckfaces;
 
 import net.minecraft.world.level.block.Block;
 import net.wkhan.naturesaura_plus.NaturesAuraPlusUtils;

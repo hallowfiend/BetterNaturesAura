@@ -4,7 +4,7 @@ import de.ellpeck.naturesaura.blocks.tiles.BlockEntityFlowerGenerator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.wkhan.naturesaura_plus.common.data.auragen.FlowerGeneration;
+import net.wkhan.naturesaura_plus.common.data.duckfaces.FlowerGeneration;
 import net.wkhan.naturesaura_plus.common.network.packets.S2CPacketFlowerGenUpdate;
 
 public class ClientPacketHandler {

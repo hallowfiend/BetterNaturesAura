@@ -6,7 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules;
-import net.wkhan.naturesaura_plus.common.data.auragen.SlimeGeneration;
+import net.wkhan.naturesaura_plus.common.data.duckfaces.SlimeGeneration;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

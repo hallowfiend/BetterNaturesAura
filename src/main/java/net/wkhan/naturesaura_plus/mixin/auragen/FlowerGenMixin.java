@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules;
-import net.wkhan.naturesaura_plus.common.data.auragen.FlowerGeneration;
+import net.wkhan.naturesaura_plus.common.data.duckfaces.FlowerGeneration;
 import net.wkhan.naturesaura_plus.common.network.ModNetwork;
 import net.wkhan.naturesaura_plus.common.network.packets.S2CPacketFlowerGenUpdate;
 import org.spongepowered.asm.mixin.Mixin;

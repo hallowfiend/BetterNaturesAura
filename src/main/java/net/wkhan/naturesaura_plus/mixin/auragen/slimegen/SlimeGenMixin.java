@@ -10,7 +10,7 @@ import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules;
-import net.wkhan.naturesaura_plus.common.data.auragen.SlimeGeneration;
+import net.wkhan.naturesaura_plus.common.data.duckfaces.SlimeGeneration;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
