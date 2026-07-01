@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
 
-import static net.wkhan.naturesaura_plus.Config.oakGenRange;
+import static net.wkhan.naturesaura_plus.config.AuraGenConfig.oakGenRange;
 import static net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules.OAK_GENERATIONS;
 
 @Mixin(BlockOakGenerator.class)

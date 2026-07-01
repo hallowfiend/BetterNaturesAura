@@ -19,9 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-import static net.wkhan.naturesaura_plus.Config.*;
 import static net.wkhan.naturesaura_plus.common.tag.ModTags.Blocks.LOOT_FINDER_TREASURE;
 import static net.wkhan.naturesaura_plus.common.tag.ModTags.Blocks.LOOT_FINDER_TREASURE_CHEST;
+import static net.wkhan.naturesaura_plus.config.GameplayConfig.*;
 
 @Mixin(ItemLootFinder.class)
 public abstract class ItemLootFinderMixin extends ItemImpl {

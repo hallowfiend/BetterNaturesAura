@@ -11,6 +11,9 @@ import net.wkhan.naturesaura_plus.common.network.ModNetwork;
 import net.wkhan.naturesaura_plus.compat.botania.BotaniaModItems;
 import net.wkhan.naturesaura_plus.common.item.ModItems;
 import net.wkhan.naturesaura_plus.common.reload.ReloadListener;
+import net.wkhan.naturesaura_plus.config.AuraGenConfig;
+import net.wkhan.naturesaura_plus.config.GameplayConfig;
+import net.wkhan.naturesaura_plus.config.MiscConfig;
 
 @Mod(NaturesAuraPlus.MODID)
 public class NaturesAuraPlus
@@ -38,7 +41,9 @@ public class NaturesAuraPlus
         MinecraftForge.EVENT_BUS.addListener(this::onReload);
         ModNetwork.init();
 
-        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        context.registerConfig(ModConfig.Type.COMMON, AuraGenConfig.SPEC, "naturesaura_plus/aura_gen_config.toml");
+        context.registerConfig(ModConfig.Type.COMMON, GameplayConfig.SPEC, "naturesaura_plus/gameplay_config.toml");
+        context.registerConfig(ModConfig.Type.COMMON, MiscConfig.SPEC, "naturesaura_plus/misc_config.toml");
     }
 
     private void onReload(AddReloadListenerEvent event) {
