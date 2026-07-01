@@ -113,7 +113,7 @@ public class ClientCommonEvents {
             int centerX = eventWindow.getGuiScaledWidth() / 2;
             int centerY = eventWindow.getGuiScaledHeight() / 2;
             drawContainerInfo(graphics, vitality, 100, 16384063,
-                    mc, centerX-40, centerY + yGuiOffset, 15, "Vitality: " + vitality, null);
+                    mc, centerX-40, centerY + yGuiOffset, 15, "Vitality", null);
             NaturesAuraPlusUtils.circularBuffer<Block> flowerBuffer =
                     ((FlowerGeneration) flowerGenerator).naturesaura_plus$flowerTileAuraGeneratorReadBuffer();
             if (flowerBuffer == null) return;
