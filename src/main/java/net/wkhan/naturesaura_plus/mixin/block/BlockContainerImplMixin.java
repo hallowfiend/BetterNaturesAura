@@ -1,4 +1,4 @@
-package net.wkhan.naturesaura_plus.mixin.misc;
+package net.wkhan.naturesaura_plus.mixin.block;
 
 import de.ellpeck.naturesaura.blocks.BlockContainerImpl;
 import net.minecraft.world.level.block.BaseEntityBlock;
