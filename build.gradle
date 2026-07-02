@@ -121,6 +121,8 @@ dependencies {
     // then special handling is done to allow a setup of a vanilla dependency without the use of an external repository.
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.4"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:[0.5.4,)"))
     implementation fg.deobf("curse.maven:natures-aura-306626:4963590")
     implementation fg.deobf("curse.maven:patchouli-306770:6164575")
     implementation fg.deobf("curse.maven:curios-309927:6418456")

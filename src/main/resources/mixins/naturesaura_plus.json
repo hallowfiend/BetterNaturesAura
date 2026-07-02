@@ -9,8 +9,8 @@
     "item.ItemStackMixin",
     "block.BlockDispenserMixin",
     "auragen.MossGenMixin",
-    "misc.TreeRitualMixin",
-    "block.BlockEntityWoodStandMixin",
+    "misc.treeritual.TreeRitualMixin",
+    "misc.treeritual.BlockEntityWoodStandMixin",
     "block.BlockEntityHopperUpgradeMixin",
     "item.ItemLootFinderMixin",
     "auragen.FlowerGenMixin",
@@ -28,7 +28,10 @@
     "auragen.oakgen.OakGenMixin",
     "auragen.oakgen.BlockOakGenMixin",
     "block.BlockWoodStandMixin",
-    "misc.BlockContainerImplMixin"
+    "block.BlockContainerImplMixin",
+    "misc.treeritual.TreeFeatureMixin",
+    "misc.treeritual.AbstractHugeMushroomFeatureMixin",
+    "misc.treeritual.FeatureMixin"
   ],
   "client": [],
   "server": []

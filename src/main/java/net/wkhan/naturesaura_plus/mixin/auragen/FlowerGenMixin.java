@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.wkhan.naturesaura_plus.Config.*;
+import static net.wkhan.naturesaura_plus.config.AuraGenConfig.*;
 import static net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules.FLOWER_GENERATIONS;
 import static net.wkhan.naturesaura_plus.NaturesAuraPlusUtils.circularBuffer;
 

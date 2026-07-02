@@ -13,7 +13,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.wkhan.naturesaura_plus.NaturesAuraPlus;
-import net.wkhan.naturesaura_plus.common.data.duckfaces.WoodStandRender;
+import net.wkhan.naturesaura_plus.common.data.duckfaces.AbstractWoodStand;
 import net.wkhan.naturesaura_plus.common.tag.ModTags;
 
 @Mod.EventBusSubscriber(modid = NaturesAuraPlus.MODID)
@@ -37,9 +37,9 @@ public class ApplyWoodStandRenderMaterialEvent {
             material = Blocks.AIR.defaultBlockState();
         else
             return;
-        if (((WoodStandRender) woodStand).naturesaura_plus$getWoodStandMaterialBlockState() == material)
+        if (((AbstractWoodStand) woodStand).naturesaura_plus$getWoodStandMaterialBlockState() == material)
             return;
-        ((WoodStandRender) woodStand).naturesaura_plus$setWoodStandMaterialBlockState(material);
+        ((AbstractWoodStand) woodStand).naturesaura_plus$setWoodStandMaterialBlockState(material);
         woodStand.setChanged();
         woodStand.requestModelDataUpdate();
         BlockState state = woodStand.getBlockState();

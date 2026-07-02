@@ -1,7 +1,5 @@
 package net.wkhan.naturesaura_plus.common.item;
 
-import de.ellpeck.naturesaura.packet.PacketHandler;
-import de.ellpeck.naturesaura.packet.PacketParticles;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -10,7 +8,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -41,30 +38,17 @@ public class ItemRecallCoffee extends Item {
         float spawnAngle = levelNVec3.angle;
         ServerPlayer serverPlayer = (ServerPlayer) player;
         int petTpRange = 2; //make config
-        List<LivingEntity> pets = serverLevel.getNearbyEntities(LivingEntity.class,
-                TargetingConditions.forNonCombat().ignoreInvisibilityTesting().ignoreLineOfSight().range(petTpRange).selector(
-                        target -> {
-                            if (target instanceof TamableAnimal pet)
-                                return serverPlayer.getUUID() == pet.getOwnerUUID();
-                            else if (target instanceof AbstractHorse horse)
-                                return serverPlayer.getUUID() == horse.getOwnerUUID();
-                            return false;
-                        }
-                ), serverPlayer, serverPlayer.getBoundingBox().inflate(petTpRange));
-
-        pets.forEach(pet -> {
-            PacketHandler.sendToAllAround(serverLevel, BlockPos.containing(pet.position()), 32,
-                    new PacketParticles((float)pet.getX(), (float)pet.getY(), (float)pet.getZ(), PacketParticles.Type.PET_REVIVER));
-            pet.teleportTo(spawnPos.x, spawnPos.y, spawnPos.z);
+        List<LivingEntity> pets = serverLevel.getEntitiesOfClass(LivingEntity.class,
+                serverPlayer.getBoundingBox().inflate(petTpRange), target -> {
+            if (target instanceof TamableAnimal pet)
+                return serverPlayer.getUUID().equals(pet.getOwnerUUID());
+            else if (target instanceof AbstractHorse horse)
+                return serverPlayer.getUUID().equals(horse.getOwnerUUID());
+            return false;
         });
 
-        PacketHandler.sendToAllAround(serverLevel, BlockPos.containing(serverPlayer.position()), 32,
-                new PacketParticles((float)serverPlayer.getX(), (float)serverPlayer.getY(), (float)serverPlayer.getZ(), PacketParticles.Type.PET_REVIVER));
+        pets.forEach(pet -> pet.teleportTo(spawnPos.x, spawnPos.y, spawnPos.z));
         serverPlayer.teleportTo(serverLevel, spawnPos.x, spawnPos.y, spawnPos.z, spawnAngle, 0.0F);
-
-        PacketHandler.sendToAllAround(serverLevel, BlockPos.containing(spawnPos), 32,
-                new PacketParticles((float) spawnPos.x,(float) spawnPos.y,(float) spawnPos.z, PacketParticles.Type.PET_REVIVER));
-
         return super.finishUsingItem(stack, level, entity);
     }
 

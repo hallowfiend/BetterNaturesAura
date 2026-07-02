@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static net.wkhan.naturesaura_plus.Config.slimeGenRange;
+import static net.wkhan.naturesaura_plus.config.AuraGenConfig.slimeGenRange;
 import static net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules.SLIME_GENERATIONS;
 
 @Mixin(targets = "de.ellpeck.naturesaura.blocks.BlockSlimeSplitGenerator$Events")
