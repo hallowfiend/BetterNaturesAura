@@ -9,7 +9,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -21,8 +25,12 @@ import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.forgespi.locating.IModFile;
+import net.minecraftforge.resource.PathPackResources;
 import net.wkhan.naturesaura_plus.NaturesAuraPlus;
 import net.wkhan.naturesaura_plus.NaturesAuraPlusUtils;
 import net.wkhan.naturesaura_plus.common.client.ClientDualBarTooltipComponent;
@@ -33,6 +41,7 @@ import vazkii.patchouli.common.item.ItemModBook;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +70,21 @@ public class ClientCommonEvents {
             event.getModels().put(modelLocWaterLogged, new DynamicWoodStandModel(existingModelWaterLogged));
             event.getModels().put(modelLoc, new DynamicWoodStandModel(existingModel));
        }
+
+        @SubscribeEvent
+        public static void onAddPackFinders(AddPackFindersEvent event) {
+            if (event.getPackType() != PackType.CLIENT_RESOURCES) return;
+            IModFile modFile = ModList.get().getModFileById(NaturesAuraPlus.MODID).getFile();
+            Path packPath = modFile.findResource("naturesaura_override");
+
+            Pack pack = Pack.readMetaAndCreate(
+                    NaturesAuraPlus.MODID, Component.literal("NA-Overrides"),
+                    true, (name) -> new PathPackResources(name, true, packPath),
+                    PackType.CLIENT_RESOURCES, Pack.Position.TOP, PackSource.BUILT_IN
+            );
+            if (pack != null)
+                event.addRepositorySource((consumer) -> consumer.accept(pack));
+        }
     }
 
     private static final List<Field> auraItemFields = new ArrayList<>();
