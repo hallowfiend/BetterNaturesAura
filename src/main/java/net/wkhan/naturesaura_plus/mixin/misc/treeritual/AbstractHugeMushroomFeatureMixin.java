@@ -27,6 +27,8 @@ public abstract class AbstractHugeMushroomFeatureMixin extends Feature<HugeMushr
 
     @WrapMethod(method = "place")
     private boolean naturesaura_plus$takeMushroomCache(FeaturePlaceContext<HugeMushroomFeatureConfiguration> context, Operation<Boolean> original) {
+        if (!(context.level() instanceof net.minecraft.server.level.ServerLevel))
+            return original.call(context);
         BlockPos saplingPos = context.origin();
         Level level = context.level().getLevel();
         ((MultiBlockUtil) Multiblocks.TREE_RITUAL).naturesaura_plus$allowAirInRitual();

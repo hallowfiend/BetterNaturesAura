@@ -39,6 +39,8 @@ public abstract class TreeFeatureMixin extends Feature<TreeConfiguration> {
                                                    BlockPos saplingPos, BiConsumer<BlockPos, BlockState> rootSetter,
                                                    BiConsumer<BlockPos, BlockState> trunkSetter, FoliagePlacer.FoliageSetter foliageSetter,
                                                    TreeConfiguration config, Operation<Boolean> original) {
+        if (!(worldGenLevel instanceof net.minecraft.server.level.ServerLevel))
+            return original.call(instance, worldGenLevel, randomSource, saplingPos, rootSetter, trunkSetter, foliageSetter, config);
         ((MultiBlockUtil) Multiblocks.TREE_RITUAL).naturesaura_plus$allowAirInRitual();
         boolean isRitual = Multiblocks.TREE_RITUAL.isComplete(worldGenLevel.getLevel(), saplingPos);
 
