@@ -11,7 +11,7 @@ import net.minecraft.world.level.levelgen.feature.AbstractHugeMushroomFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.HugeMushroomFeatureConfiguration;
-import net.wkhan.naturesaura_plus.common.data.MushroomTreeRitualTracker;
+import net.wkhan.naturesaura_plus.common.data.TreeRitualTreeTracker;
 import net.wkhan.naturesaura_plus.common.data.duckfaces.AbstractWoodStand;
 import net.wkhan.naturesaura_plus.common.data.duckfaces.MultiBlockUtil;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,15 +38,15 @@ public abstract class AbstractHugeMushroomFeatureMixin extends Feature<HugeMushr
 
         Set<BlockPos> capturedStems = new HashSet<>();
         Set<BlockPos> capturedCaps = new HashSet<>();
-        MushroomTreeRitualTracker.STEM_CACHE.set(capturedStems);
-        MushroomTreeRitualTracker.CAP_CACHE.set(capturedCaps);
+        TreeRitualTreeTracker.STEM_CACHE.set(capturedStems);
+        TreeRitualTreeTracker.LEAF_CACHE.set(capturedCaps);
 
         boolean grewSuccessfully;
         try {
             grewSuccessfully = original.call(context);
         } finally {
-            MushroomTreeRitualTracker.STEM_CACHE.remove();
-            MushroomTreeRitualTracker.CAP_CACHE.remove();
+            TreeRitualTreeTracker.STEM_CACHE.remove();
+            TreeRitualTreeTracker.LEAF_CACHE.remove();
         }
 
         if (!grewSuccessfully || capturedStems.isEmpty()) return grewSuccessfully;

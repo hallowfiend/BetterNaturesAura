@@ -10,4 +10,5 @@ public interface AbstractWoodStand {
     void naturesaura_plus$setWoodStandMaterialBlockState(BlockState material);
     void naturesaura_plus$setTreeStemCache(Set<BlockPos> treeCache);
     void naturesaura_plus$setTreeLeafCache(Set<BlockPos> treeCache);
+    void naturesaura_plus$setTreeDecoratorCache(Set<BlockPos> treeCache);
 }

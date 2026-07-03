@@ -15,6 +15,7 @@ import net.minecraft.world.level.levelgen.feature.configurations.TreeConfigurati
 import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacer;
 import net.wkhan.naturesaura_plus.common.data.duckfaces.AbstractWoodStand;
 import net.wkhan.naturesaura_plus.common.data.duckfaces.MultiBlockUtil;
+import net.wkhan.naturesaura_plus.common.tag.ModTags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -49,16 +50,27 @@ public abstract class TreeFeatureMixin extends Feature<TreeConfiguration> {
 
         Set<BlockPos> capturedStem = new HashSet<>();
         Set<BlockPos> capturedLeaves = new HashSet<>();
+        Set<BlockPos> capturedDecorators = new HashSet<>();
 
         BiConsumer<BlockPos, BlockState> wrappedTrunk = (p, s) -> {
-            capturedStem.add(p.immutable());
+            if (s.is(ModTags.Blocks.TREE_RITUAL_STEMS))
+                capturedStem.add(p.immutable());
+            else if (s.is(ModTags.Blocks.TREE_RITUAL_LEAVES))
+                capturedLeaves.add(p.immutable());
+            else
+                capturedDecorators.add(p.immutable());
             trunkSetter.accept(p, s);
         };
 
         FoliagePlacer.FoliageSetter wrappedFoliage = new FoliagePlacer.FoliageSetter() {
             @Override
             public void set(BlockPos p, BlockState s) {
-                capturedLeaves.add(p.immutable());
+                if (s.is(ModTags.Blocks.TREE_RITUAL_STEMS))
+                    capturedStem.add(p.immutable());
+                else if (s.is(ModTags.Blocks.TREE_RITUAL_LEAVES))
+                    capturedLeaves.add(p.immutable());
+                else
+                    capturedDecorators.add(p.immutable());
                 foliageSetter.set(p, s);
             }
 
@@ -75,8 +87,9 @@ public abstract class TreeFeatureMixin extends Feature<TreeConfiguration> {
         Multiblocks.TREE_RITUAL.forEach(saplingPos, 'W', (standPos, matcher) -> {
             BlockEntity tile = worldGenLevel.getBlockEntity(standPos);
             if (tile instanceof AbstractWoodStand woodStand) {
-                woodStand.naturesaura_plus$setTreeStemCache(capturedStem);
+                woodStand.naturesaura_plus$setTreeStemCache(capturedStem.isEmpty() ? null : capturedStem);
                 woodStand.naturesaura_plus$setTreeLeafCache(capturedLeaves.isEmpty() ? null : capturedLeaves);
+                woodStand.naturesaura_plus$setTreeDecoratorCache(capturedDecorators.isEmpty() ? null : capturedDecorators);
             }
             return true;
         });
