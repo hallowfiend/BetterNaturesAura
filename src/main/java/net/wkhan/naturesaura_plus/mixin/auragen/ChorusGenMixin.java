@@ -66,7 +66,6 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
         if (this.currentlyBreaking.isEmpty()) return;
         BlockPos pos = this.currentlyBreaking.removeLast(); //might not work
         Block block = this.level.getBlockState(pos).getBlock();
-//        System.out.println(block + "\n" + this.naturesaura_plus$chorusValues);
         if (naturesaura_plus$chorusValues == null || (block != this.naturesaura_plus$chorusValues.stemBlock()
                 && block != this.naturesaura_plus$chorusValues.capBlock())) {
             naturesaura_plus$clearInternalData();
@@ -103,7 +102,6 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
                 for(int z = -range; z <= range; ++z) {
                     BlockPos offset = this.worldPosition.offset(x, y, z);
                     Block soil = this.level.getBlockState(offset).getBlock(); //npe potential?
-//                    System.out.println(CHORUS_GENERATIONS.keySet());
                     if (!CHORUS_GENERATIONS.containsKey(soil)) continue;
                     BlockState shoot = this.level.getBlockState(offset.above());
                     if (!shoot.is(ModTags.Blocks.TOWERING_PLANT_STEM) && !shoot.is(ModTags.Blocks.TOWERING_PLANT_CAP)) continue;

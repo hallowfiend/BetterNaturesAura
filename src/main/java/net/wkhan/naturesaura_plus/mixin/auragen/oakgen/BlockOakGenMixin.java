@@ -65,10 +65,8 @@ public abstract class BlockOakGenMixin extends BlockContainerImpl {
             Optional<ResourceKey<ConfiguredFeature<?,?>>> optionalKey = tree.unwrapKey();
             if (optionalKey.isEmpty()) return false;
             AuraGenRules.oakValues oakValues = OAK_GENERATIONS.get(optionalKey.get());
-            System.out.println("Found block: \n" + oakValues + "\n" + event.getFeature());
             if (oakValues == null) return false;
             ResourceKey<ConfiguredFeature<?, ?>> replacement = oakValues.featureReplacement();
-            System.out.println("Found oak values: \n" + replacement);
             if (replacement == null) return true;
             oakGen.scheduledBigTrees.add(pos);
             ((OakGeneration) oakGen).naturesaura_plus$scheduledBigTreesAuraGainAdd(oakValues.auraAmount());
