@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules;
+import net.wkhan.naturesaura_plus.data.auragen.AuraGenRules;
 import net.wkhan.naturesaura_plus.common.tag.ModTags;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,9 +29,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Deque;
 import java.util.List;
 
-import static net.wkhan.naturesaura_plus.config.AuraGenConfig.chorusGenRange;
+import static net.wkhan.naturesaura_plus.data.config.AuraGenConfig.chorusGenRange;
 import static net.wkhan.naturesaura_plus.NaturesAuraPlusUtils.crawlConnectedBlocks;
-import static net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules.CHORUS_GENERATIONS;
+import static net.wkhan.naturesaura_plus.data.auragen.AuraGenRules.CHORUS_GENERATIONS;
 
 @Mixin(BlockEntityChorusGenerator.class)
 public abstract class ChorusGenMixin extends BlockEntityImpl {
@@ -66,7 +66,6 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
         if (this.currentlyBreaking.isEmpty()) return;
         BlockPos pos = this.currentlyBreaking.removeLast(); //might not work
         Block block = this.level.getBlockState(pos).getBlock();
-//        System.out.println(block + "\n" + this.naturesaura_plus$chorusValues);
         if (naturesaura_plus$chorusValues == null || (block != this.naturesaura_plus$chorusValues.stemBlock()
                 && block != this.naturesaura_plus$chorusValues.capBlock())) {
             naturesaura_plus$clearInternalData();
@@ -103,7 +102,6 @@ public abstract class ChorusGenMixin extends BlockEntityImpl {
                 for(int z = -range; z <= range; ++z) {
                     BlockPos offset = this.worldPosition.offset(x, y, z);
                     Block soil = this.level.getBlockState(offset).getBlock(); //npe potential?
-//                    System.out.println(CHORUS_GENERATIONS.keySet());
                     if (!CHORUS_GENERATIONS.containsKey(soil)) continue;
                     BlockState shoot = this.level.getBlockState(offset.above());
                     if (!shoot.is(ModTags.Blocks.TOWERING_PLANT_STEM) && !shoot.is(ModTags.Blocks.TOWERING_PLANT_CAP)) continue;

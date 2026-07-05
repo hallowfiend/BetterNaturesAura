@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.wkhan.naturesaura_plus.common.data.duckfaces.AbstractWoodStand;
+import net.wkhan.naturesaura_plus.data.duckfaces.AbstractWoodStand;
 import net.wkhan.naturesaura_plus.common.tag.ModTags;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
 
-import static net.wkhan.naturesaura_plus.common.client.render.DynamicWoodStandModel.STAND_MATERIAL;
+import static net.wkhan.naturesaura_plus.client.render.DynamicWoodStandModel.STAND_MATERIAL;
 
 @Mixin(BlockEntityWoodStand.class)
 public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl implements AbstractWoodStand {
@@ -48,6 +48,7 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl implemen
     @Unique private BlockState naturesaura_plus$standMaterial;
     @Unique private Set<BlockPos> naturesaura_plus$treeCache = null;
     @Unique private Set<BlockPos> naturesaura_plus$treeCacheLeaf = null;
+    @Unique private Set<BlockPos> naturesaura_plus$treeCacheDecorator = null;
 
     @Unique
     private void naturesaura_plus$abortRitual() {
@@ -173,10 +174,17 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl implemen
                 }
 
             if (this.naturesaura_plus$treeCacheLeaf != null)
-                for (BlockPos leafPos : naturesaura_plus$treeCacheLeaf) {
+                for (BlockPos leafPos : this.naturesaura_plus$treeCacheLeaf) {
                     level.setBlockAndUpdate(leafPos, Blocks.AIR.defaultBlockState());
                     PacketHandler.sendToAllAround(level, leafPos, 32, new PacketParticles((float) leafPos.getX(), (float) leafPos.getY(), (float) leafPos.getZ(), PacketParticles.Type.TR_DISAPPEAR));
                 }
+
+            if (this.naturesaura_plus$treeCacheDecorator != null) {
+                for (BlockPos leafPos : this.naturesaura_plus$treeCacheDecorator) {
+                    level.setBlockAndUpdate(leafPos, Blocks.AIR.defaultBlockState());
+                    PacketHandler.sendToAllAround(level, leafPos, 32, new PacketParticles((float) leafPos.getX(), (float) leafPos.getY(), (float) leafPos.getZ(), PacketParticles.Type.TR_DISAPPEAR));
+                }
+            }
 
             Multiblocks.TREE_RITUAL.forEach(this.ritualPos, 'W', (pos, matcher) -> {
                 BlockEntity tile = level.getBlockEntity(pos);
@@ -262,7 +270,7 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl implemen
     @Override
     public @NotNull ModelData getModelData() {
         return ModelData.builder()
-                .with(STAND_MATERIAL, this.naturesaura_plus$standMaterial).build(); //i hope you play nice with nulls
+                .with(STAND_MATERIAL, this.naturesaura_plus$standMaterial).build();
     }
 
     @Override
@@ -273,5 +281,10 @@ public abstract class BlockEntityWoodStandMixin extends BlockEntityImpl implemen
     @Override
     public void naturesaura_plus$setTreeLeafCache(Set<BlockPos> treeCache) {
         this.naturesaura_plus$treeCacheLeaf = treeCache;
+    }
+
+    @Override
+    public void naturesaura_plus$setTreeDecoratorCache(Set<BlockPos> treeCache) {
+        this.naturesaura_plus$treeCacheDecorator = treeCache;
     }
 }

@@ -86,5 +86,12 @@ public class ModBlockTagGenerator extends BlockTagsProvider {
                                 ModBlocks.STRIPPED_ANCIENT_LOG.get(),
                                 ModBlocks.STRIPPED_ANCIENT_BARK.get()
                         );
+
+                this.tag(ModTags.Blocks.TREE_FERTILIZER_SAFE_IN_RITUAL)
+                        .add(
+                                de.ellpeck.naturesaura.blocks.ModBlocks.GOLD_POWDER,
+                                de.ellpeck.naturesaura.blocks.ModBlocks.PLACER,
+                                de.ellpeck.naturesaura.blocks.ModBlocks.WOOD_STAND
+                        );
         }
 }

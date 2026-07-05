@@ -15,8 +15,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.level.SaplingGrowTreeEvent;
-import net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules;
-import net.wkhan.naturesaura_plus.common.data.duckfaces.OakGeneration;
+import net.wkhan.naturesaura_plus.data.auragen.AuraGenRules;
+import net.wkhan.naturesaura_plus.data.duckfaces.OakGeneration;
 import net.wkhan.naturesaura_plus.common.tag.ModTags;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,8 +26,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
 
-import static net.wkhan.naturesaura_plus.config.AuraGenConfig.oakGenRange;
-import static net.wkhan.naturesaura_plus.common.data.auragen.AuraGenRules.OAK_GENERATIONS;
+import static net.wkhan.naturesaura_plus.data.config.AuraGenConfig.oakGenRange;
+import static net.wkhan.naturesaura_plus.data.auragen.AuraGenRules.OAK_GENERATIONS;
 
 @Mixin(BlockOakGenerator.class)
 public abstract class BlockOakGenMixin extends BlockContainerImpl {
@@ -65,10 +65,8 @@ public abstract class BlockOakGenMixin extends BlockContainerImpl {
             Optional<ResourceKey<ConfiguredFeature<?,?>>> optionalKey = tree.unwrapKey();
             if (optionalKey.isEmpty()) return false;
             AuraGenRules.oakValues oakValues = OAK_GENERATIONS.get(optionalKey.get());
-            System.out.println("Found block: \n" + oakValues + "\n" + event.getFeature());
             if (oakValues == null) return false;
             ResourceKey<ConfiguredFeature<?, ?>> replacement = oakValues.featureReplacement();
-            System.out.println("Found oak values: \n" + replacement);
             if (replacement == null) return true;
             oakGen.scheduledBigTrees.add(pos);
             ((OakGeneration) oakGen).naturesaura_plus$scheduledBigTreesAuraGainAdd(oakValues.auraAmount());
